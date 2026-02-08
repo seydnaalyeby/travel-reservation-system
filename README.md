@@ -187,6 +187,4 @@ When you're done, just write **ok did** (or "done", "finished") and we continue 
 
 Good luck!
 
-## 📂 Project Structure
 
-**Backend**
