@@ -94,7 +94,8 @@ com.example.reservations_voyages/
     └── ReservationController.java
 
 
-**Frontend**
+
+Frontend (Angular) :
 src/app/features/
 ├── auth/
 │   ├── login/
@@ -108,24 +109,19 @@ src/app/features/
 │   ├── reservations/
 │   └── payment/
 └── admin/
-├── admin-dashboard/
-├── users/
-├── hotels/
-├── flights/
-└── reservations/
-text
+    ├── admin-dashboard/
+    ├── users/
+    ├── hotels/
+    ├── flights/
+    └── reservations/
 
+🚀 How to Run Locally
+Backend
 
-
-## 🚀 How to Run Locally
-
-### Backend 
-
-```bash
 # 1. Clone the repository
-git clone https://github.com/seydnealy/travel-reservation-system.git
+git clone https://github.com/seydnaaly/travel-reservation-system.git
 
-# 2. Go to backend folder (adjust path if your folder name is different)
+# 2. Go to backend folder (adjust if needed)
 cd travel-reservation-system/backend
 
 # 3. Configure application.properties or application.yml
@@ -133,17 +129,14 @@ cd travel-reservation-system/backend
 #    - jwt secret key
 #    - server port (default 8080)
 
-# 4. Install dependencies and run
+# 4. Run
 ./mvnw clean install
 ./mvnw spring-boot:run
 
-API will be available at: http://localhost:8080
-
+API available at: http://localhost:8080
 
 Frontend
-
-
-# 1. Go to frontend folder (adjust path if needed)
+# 1. Go to frontend folder (adjust if needed)
 cd travel-reservation-system/frontend
 
 # 2. Install dependencies
@@ -153,6 +146,9 @@ npm install
 ng serve --open
 # or
 npm start
+
+Frontend available at: http://localhost:4200
+Make sure backend is running — frontend calls http://localhost:8080/api/...
 
 
 ## 📸 Screenshots
@@ -188,37 +184,17 @@ npm start
 ![Login Page](screenshots/login-page.png)
 
 
-Frontend will be available at: http://localhost:4200
-Make sure the backend is running first — the frontend usually calls http://localhost:8080/api/...
-
-
 
 📌 Status & Next Steps
 
 Project completed and functional
 Code is structured and follows good practices
 Ready to demonstrate in interviews / freelance proposals
-Possible improvements: real payments (Stripe), email notifications, advanced search filters, deployment (Docker, Railway/Render/Vercel/Netlify)
+Possible improvements: real payments (Stripe), email notifications, advanced search filters, deployment (Docker, Render/Railway/Vercel/Netlify)
 
-
-  📬 Contact
+📬 Contact
 Looking for freelance opportunities:
 Angular • Spring Boot • Java • Fullstack • API development • Travel/Booking systems
 Email: seydnaalyeby@gmail.com
 Feel free to ⭐ this repo if you find it useful!
-
-
-
-**Instructions to use it:**
-1. Go to your repository
-2. Click README.md
-3. Click the pencil ✏️ to edit
-4. Select all existing text and delete it
-5. Paste the whole block above
-6. Scroll down and click **Commit changes**
-
-When you're done, just write **ok did** (or "done", "finished") and we continue with the next step (screenshots, badges, etc.).
-
-Good luck!
-
 
