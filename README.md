@@ -51,23 +51,47 @@ Modern full-stack travel booking application for **flights** and **hotels**.
 - Lazy-loaded modules / feature-based structure
 
 ## 📂 Project Structure
-**Backend**
 
+**Backend (Spring Boot)**
+
+```text
 com.example.reservations_voyages/
 ├── auth/
 │   ├── AuthController.java
 │   ├── AuthService.java
 │   ├── dto/
+│   │   ├── AuthResponse.java
+│   │   ├── LoginRequest.java
+│   │   └── RefreshTokenRequest.java
 │   └── AuthMapper.java
 ├── security/
 │   ├── config/
+│   │   └── SecurityConfig.java
 │   ├── jwt/
+│   │   ├── JwtService.java
+│   │   ├── JwtAuthFilter.java
+│   │   └── JwtProperties.java
 │   └── CustomUserDetailsService.java
 ├── user/
+│   ├── User.java
+│   ├── UserRepository.java
+│   ├── UserService.java
+│   └── UserController.java
 ├── hotel/
+│   ├── Hotel.java
+│   ├── HotelRepository.java
+│   ├── HotelService.java
+│   └── HotelController.java
 ├── flight/
+│   ├── Flight.java
+│   ├── FlightRepository.java
+│   ├── FlightService.java
+│   └── FlightController.java
 └── reservation/
-text
+    ├── Reservation.java
+    ├── ReservationRepository.java
+    ├── ReservationService.java
+    └── ReservationController.java
 
 
 **Frontend**
