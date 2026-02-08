@@ -154,6 +154,40 @@ ng serve --open
 # or
 npm start
 
+
+## 📸 Screenshots
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+### Admin Reservations Management
+![Admin Reservations](screenshots/admin-reservations.png)
+
+### Admin Hotels Management
+![Admin Hotels](screenshots/admin-hotels.png)
+
+### Admin Users Management
+![Admin Users](screenshots/admin-users.png)
+
+### Admin Flights Management
+![Admin Flights](screenshots/admin-flights.png)
+
+### Client Reservations Page
+![Client Reservations](screenshots/client-home-reservations.png)
+
+### Client Flights Search
+![Client Flights Search](screenshots/client-flights-search.png)
+
+### Client Hotels List
+![Client Hotels List](screenshots/client-hotels-list.png)
+
+### Register Page
+![Register Page](screenshots/register-page.png)
+
+### Login Page
+![Login Page](screenshots/login-page.png)
+
+
 Frontend will be available at: http://localhost:4200
 Make sure the backend is running first — the frontend usually calls http://localhost:8080/api/...
 
