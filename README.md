@@ -113,7 +113,7 @@ src/app/features/
     ├── hotels/
     ├── flights/
     └── reservations/
-```text
+```
 ## 🚀 How to Run Locally
 
 **Backend**
