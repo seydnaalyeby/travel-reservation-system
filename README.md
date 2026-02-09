@@ -1,53 +1,80 @@
 # Travel Reservation System
 
 ## Overview
-This project is a travel reservation system designed to help users plan and book their travel plans efficiently.
+The Travel Reservation System is a full-stack booking platform designed to facilitate travel reservations across various domains, including flights, hotels, and car rentals. It offers a user-friendly interface and robust features for both end-users and administrators.
 
 ## Features
-- **Search for flights**
-- **View and book hotels**
-- **Car rental services**
+- **User Registration and Login**: Users can create accounts and log in to manage their reservations.
+- **Search Functionality**: Users can search for flights, hotels, and cars based on their preferences.
+- **Booking Management**: Users can view, modify, and cancel their bookings.
+- **Admin Dashboard**: Administrators have access to manage users, view bookings, and manage available travel options.
+- **Payment Integration**: Secure payment processing for all reservations.
+- **Responsive Design**: The platform is fully responsive, ensuring usability on all devices.
 
-## 📸 Screenshots
+## Technologies Used
+- **Frontend**: React.js, Bootstrap, Axios
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB
+- **Authentication**: JWT and Bcrypt
+- **APIs**: Third-party APIs for flight and hotel data
 
-### Admin Dashboard
-![Admin Dashboard](screenshots/admin-dashboard.png)
-
-### Admin Reservations Management
-![Admin Reservations](screenshots/admin-reservations.png)
-
-### Admin Hotels Management
-![Admin Hotels](screenshots/admin-hotels.png)
-
-### Admin Users Management
-![Admin Users](screenshots/admin-users.png)
-
-### Admin Flights Management
-![Admin Flights](screenshots/admin-flights.png)
-
-### Client Reservations Page
-![Client Reservations](screenshots/client-home-reservations.png)
-
-### Client Flights Search
-![Client Flights Search](screenshots/client-flights-search.png)
-
-### Client Hotels List
-![Client Hotels List](screenshots/client-hotels-list.png)
-
-### Register Page
-![Register Page](screenshots/register-page.png)
-
-### Login Page
-![Login Page](screenshots/login-page.png)
-
-## Installation
-To install the project, run:
+## Project Structure
 ```
-git clone https://github.com/seydnaalyeby/travel-reservation-system.git
-```
+travel-reservation-system/
+│
+├── client/                   # Frontend code
+│   ├── public/               # Public assets
+│   └── src/                  # React components
+│
+├── server/                   # Backend code
+│   ├── models/               # Mongoose models
+│   ├── routes/               # API routes
+│   └── controllers/          # Business logic
+│
+├── config/                   # Configuration files
+│└── package.json              # Dependencies
+``` 
 
-## Usage
-After installation, navigate to the project folder and run:
-```
-pm start
-```
+## Setup Instructions
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/seydnaalyeby/travel-reservation-system.git
+   cd travel-reservation-system
+   ```
+2. Navigate to the `client` directory and install dependencies:
+   ```bash
+   cd client
+   npm install
+   ```
+3. Navigate to the `server` directory and install dependencies:
+   ```bash
+   cd ../server
+   npm install
+   ```
+4. Set up environment variables in a `.env` file in the `server` directory:
+   ```bash
+   DATABASE_URL=your_database_url
+   JWT_SECRET=your_jwt_secret
+   ```
+5. Start the server:
+   ```bash
+   cd server
+   npm start
+   ```
+6. Start the client:
+   ```bash
+   cd ../client
+   npm start
+   ```
+
+## Screenshots
+![Homepage](path-to-homepage-screenshot.png)
+![Booking Interface](path-to-booking-interface-screenshot.png)
+
+## Contact Information
+For questions or inquiries, please contact:
+- **Name**: Seydna Al-Ayeby
+- **Email**: seydna.alayeby@example.com
+- **GitHub**: [seydnaalyeby](https://github.com/seydnaalyeby)
+
+---
