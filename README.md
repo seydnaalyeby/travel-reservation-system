@@ -1,162 +1,202 @@
-# Reservations Voyages - Travel Reservation Management System
+<<<<<<< HEAD
 
-A comprehensive Spring Boot REST API for managing travel reservations, including flights (vols) and hotels, with user authentication, role-based access control, and payment processing.
+>>>>>>> 6cfff433f88042effb0244c24fc4e7db8c6514fe
+# Travel Reservation System – Fullstack Booking Platform
 
-## 🚀 Features
+Modern full-stack travel booking application for flights and hotels.
 
-- **User Authentication & Authorization**
-  - JWT-based authentication with access and refresh tokens
-  - Role-based access control (ADMIN, CLIENT)
-  - Password reset functionality via email
+Frontend: Angular (client + admin panels)
+Backend: Spring Boot (secure REST API with JWT authentication)
 
-- **Reservation Management**
-  - Flight (Vol) reservations
-  - Hotel reservations
-  - Reservation status tracking
-  - Admin dashboard with statistics
+## 🎯 Main Features
 
-- **Payment Processing**
-  - Secure payment handling
-  - Payment status tracking
+### 👤 Client Features
+- Register and login
+- Browse and search hotels & flights
+- View detailed hotel/flight information and availability
+- Make and manage personal reservations
+- View reservation history
+- Mock payment processing
 
-- **Admin Features**
-  - User management (CRUD operations)
-  - Reservation statistics and analytics
-  - Top clients and items reporting
+### 🛠️ Admin Features
+- Manage all users (view, block, delete)
+- CRUD operations for hotels (add, edit, delete, upload photos)
+- CRUD operations for flights (add, edit, delete, set availability)
+- View and manage all reservations (confirm, cancel, view details)
 
-## 🛠️ Technology Stack
+### 🔐 Authentication & Security
+- User registration + login
+- JWT access + refresh token system
+- Role-based authorization (CLIENT vs ADMIN)
+- Protected endpoints
+- Secure password storage
+- JWT filter + custom UserDetails
 
-- **Framework**: Spring Boot 4.0.1
-- **Java Version**: 17
-- **Database**: PostgreSQL
-- **Security**: Spring Security with JWT
-- **Build Tool**: Maven
-- **Email**: Spring Mail (Gmail SMTP)
+## 🛠️ Technologies
 
-## 📋 Prerequisites
+**Backend**
+- Java 17+
+- Spring Boot 3+
+- Spring Security + JWT
+- Spring Data JPA / Hibernate
+- PostgreSQL / MySQL
+- Lombok
+- MapStruct (DTO mapping)
+- Spring Boot Starter Web, Validation, Security
 
-- Java 17 or higher
-- Maven 3.6+ (or use Maven Wrapper: `./mvnw`)
-- PostgreSQL 12+
-- Gmail account (for email functionality)
+**Frontend**
+- Angular 17+
+- TypeScript
+- Angular Material / Tailwind CSS / Bootstrap
+- RxJS
+- HttpClient + interceptors (for JWT)
+- Reactive Forms
+- Lazy-loaded modules / feature-based structure
 
-## 🔧 Installation & Setup
+## 📂 Project Structure
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd reservations_voyages
-   ```
+**Backend (Spring Boot
 
-2. **Database Setup**
-   - Create a PostgreSQL database named `travel_db`
-   - Update database credentials in `src/main/resources/application.properties`
+```text
+com.example.reservations_voyages/
+├── auth/
+│   ├── AuthController.java
+│   ├── AuthService.java
+│   ├── dto/
+│   │   ├── AuthResponse.java
+│   │   ├── LoginRequest.java
+│   │   └── RefreshTokenRequest.java
+│   └── AuthMapper.java
+├── security/
+│   ├── config/
+│   │   └── SecurityConfig.java
+│   ├── jwt/
+│   │   ├── JwtService.java
+│   │   ├── JwtAuthFilter.java
+│   │   └── JwtProperties.java
+│   └── CustomUserDetailsService.java
+├── user/
+│   ├── User.java
+│   ├── UserRepository.java
+│   ├── UserService.java
+│   └── UserController.java
+├── hotel/
+│   ├── Hotel.java
+│   ├── HotelRepository.java
+│   ├── HotelService.java
+│   └── HotelController.java
+├── flight/
+│   ├── Flight.java
+│   ├── FlightRepository.java
+│   ├── FlightService.java
+│   └── FlightController.java
+└── reservation/
+    ├── Reservation.java
+    ├── ReservationRepository.java
+    ├── ReservationService.java
+    └── ReservationController.java
 
-3. **Configure Application Properties**
-   - Copy `application.properties.example` to `application.properties` (if available)
-   - Update the following:
-     - Database connection details
-     - JWT secret key (use a strong, random key)
-     - Email configuration (Gmail SMTP credentials)
-     - Frontend URL for password reset links
+**Frontend (Angular)**
 
-4. **Build the Project**
-   ```bash
-   ./mvnw clean install
-   ```
-
-5. **Run the Application**
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-
-   The API will be available at `http://localhost:8081`
-
-## 📁 Project Structure
-
+src/app/features/
+├── auth/
+│   ├── login/
+│   ├── register/
+│   ├── forgot-password/
+│   └── reset-password/
+├── client/
+│   ├── client-home/
+│   ├── hotels/
+│   ├── flights/
+│   ├── reservations/
+│   └── payment/
+└── admin/
+    ├── admin-dashboard/
+    ├── users/
+    ├── hotels/
+    ├── flights/
+    └── reservations/
 ```
-src/main/java/com/example/reservations_voyages/
-├── auth/                    # Authentication & Authorization
-│   ├── controller/         # REST Controllers
-│   ├── dto/                # Data Transfer Objects
-│   └── service/            # Business Logic
-├── common/                  # Shared Components
-│   └── exception/          # Exception Handlers
-├── security/                # Security Configuration
-│   ├── config/             # Security Config
-│   └── jwt/                # JWT Implementation
-└── user/                    # User Domain
-    ├── entity/             # JPA Entities
-    ├── repo/               # Repositories
-    └── service/            # User Services
-```
+## 🚀 How to Run Locally
 
-## 🔐 API Endpoints
+**Backend**
 
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `POST /api/auth/refresh` - Refresh access token
-- `POST /api/auth/logout` - Logout user
-- `POST /api/auth/forgot-password` - Request password reset
-- `POST /api/auth/reset-password` - Reset password
+# 1. Clone the repository
+git clone https://github.com/seydnaalyeby/travel-reservation-system.git
 
-### Admin Endpoints (Requires ADMIN role)
-- `GET /api/admin/users` - List all users
-- `GET /api/admin/users/{id}` - Get user by ID
-- `POST /api/admin/users` - Create user
-- `PUT /api/admin/users/{id}` - Update user
-- `DELETE /api/admin/users/{id}` - Delete user
-- `PATCH /api/admin/users/{id}/enabled` - Enable/disable user
+# 2. Go to backend folder
+cd travel-reservation-system/backend
 
-### Client Endpoints (Requires CLIENT or ADMIN role)
-- `GET /api/client/reservations` - Get user reservations
-- `POST /api/client/reservations/vol` - Create flight reservation
-- `POST /api/client/reservations/hotel` - Create hotel reservation
+# 3. Configure application.properties or application.yml
+# - database connection
+# - jwt secret key
+# - server port (default 8080)
 
-## 🔑 Default Admin Account
+# 4. Run
+./mvnw clean install
+./mvnw spring-boot:run
 
-On first startup, an admin account is automatically created:
-- **Email**: `admin@travel.com`
-- **Password**: `Admin12345`
+API available at: http://localhost:8080
 
-⚠️ **Important**: Change the default password in production!
+**Frontend**
 
-## 🧪 Testing
+# 1. Go to frontend folder
+cd travel-reservation-system/frontend
 
-Run tests with:
-```bash
-./mvnw test
-```
+# 2. Install dependencies
+npm install
 
-## 📝 Configuration
+# 3. Start development server
+ng serve --open
 
-Key configuration files:
-- `src/main/resources/application.properties` - Application configuration
-- `pom.xml` - Maven dependencies and build configuration
+Frontend available at: http://localhost:4200
 
-## 🏗️ Build for Production
+Make sure backend is running — frontend calls http://localhost:8080/api/...
 
-```bash
-./mvnw clean package
-```
+## 📸 Screenshots
 
-The JAR file will be created in `target/reservations_voyages-0.0.1-SNAPSHOT.jar`
+### Admin Dashboard
+![Admin Dashboard](screenshots/admin-dashboard.png)
 
-Run the JAR:
-```bash
-java -jar target/reservations_voyages-0.0.1-SNAPSHOT.jar
-```
+### Admin Reservations Management
+![Admin Reservations](screenshots/admin-reservations.png)
 
-## 📄 License
+### Admin Hotels Management
+![Admin Hotels](screenshots/admin-hotels.png)
 
-This project is part of an academic assignment.
+### Admin Users Management
+![Admin Users](screenshots/admin-users.png)
 
-## 👥 Authors
+### Admin Flights Management
+![Admin Flights](screenshots/admin-flights.png)
 
-[Your Name/Team]
+### Client Reservations Page
+![Client Reservations](screenshots/client-home-reservations.png)
 
----
+### Client Flights Search
+![Client Flights Search](screenshots/client-flights-search.png)
 
-**Note**: This is a Spring Boot REST API backend. A frontend application (Angular) is required for full functionality.
+### Client Hotels List
+![Client Hotels List](screenshots/client-hotels-list.png)
 
+### Register Page
+![Register Page](screenshots/register-page.png)
+
+### Login Page
+![Login Page](screenshots/login-page.png)
+
+## 📌 Status & Next Steps
+
+- Project completed and functional
+- Code is structured and follows good practices
+- Ready to demonstrate in interviews / freelance proposals
+- Possible improvements: real payments (Stripe), email notifications, advanced search filters, deployment (Docker, Render/Railway/Vercel/Netlify)
+
+## 📬 Contact
+
+Looking for freelance opportunities:
+Angular • Spring Boot • Java • Fullstack • API development • Travel/Booking systems
+
+Email: seydnaalyeby@gmail.com
+
+Feel free to ⭐ this repo if you find it useful!
