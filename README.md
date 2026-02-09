@@ -54,7 +54,7 @@ Backend: Spring Boot (secure REST API with JWT authentication)
 
 **Backend (Spring Boot)**
 
-```text
+
 com.example.reservations_voyages/
 ├── auth/
 │   ├── AuthController.java
