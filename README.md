@@ -30,8 +30,8 @@ npm start
 
 ## Screenshots
 
-![Home Page](https://raw.githubusercontent.com/seydnaalyeby/travel-reservation-system/main/screenshots/homepage.png)
-![Booking Page](https://raw.githubusercontent.com/seydnaalyeby/travel-reservation-system/main/screenshots/bookingpage.png)
+![Home Page](https://raw.githubusercontent.com/seydnaalyeby/travel-reservation-system/main/screenshots/login-page.png)
+![Booking Page](https://raw.githubusercontent.com/seydnaalyeby/travel-reservation-system/main/screenshots/register-page.png)
 
 ## License
 
