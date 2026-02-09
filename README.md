@@ -155,7 +155,7 @@ Make sure backend is running — frontend calls http://localhost:8080/api/...
 
 ### Admin Dashboard
 ![Admin Dashboard](screenshots/admin-dashboard.png)
-![Admin Dashboard](https://github.com/seydnaalyeby/travel-reservation-system/blob/main/screenshots/admin-dashboard.png?raw=true)
+
 ### Admin Reservations Management
 ![Admin Reservations](screenshots/admin-reservations.png)
 
