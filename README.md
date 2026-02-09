@@ -52,9 +52,9 @@ Backend: Spring Boot (secure REST API with JWT authentication)
 
 ## 📂 Project Structure
 
-**Backend (Spring Boot)**
+**Backend (Spring Boot
 
-
+```text
 com.example.reservations_voyages/
 ├── auth/
 │   ├── AuthController.java
@@ -113,7 +113,7 @@ src/app/features/
     ├── hotels/
     ├── flights/
     └── reservations/
-
+```text
 ## 🚀 How to Run Locally
 
 **Backend**
