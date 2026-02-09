@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 
->>>>>>> 6cfff433f88042effb0244c24fc4e7db8c6514fe
 # Travel Reservation System – Fullstack Booking Platform
 
 Modern full-stack travel booking application for flights and hotels.
