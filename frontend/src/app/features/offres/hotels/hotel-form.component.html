@@ -1,0 +1,121 @@
+<h2 mat-dialog-title>
+  {{ isEditMode ? 'Modifier' : 'Ajouter' }} un hôtel
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="hotelForm" class="hotel-form">
+
+    <div class="grid">
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Nom de l'hôtel</mat-label>
+        <input matInput formControlName="nom" required />
+        <mat-hint>2 à 80 caractères</mat-hint>
+        <mat-error *ngIf="hotelForm.get('nom')?.hasError('required')">Le nom est obligatoire</mat-error>
+        <mat-error *ngIf="hotelForm.get('nom')?.hasError('minlength')">Nom trop court</mat-error>
+        <mat-error *ngIf="hotelForm.get('nom')?.hasError('maxlength')">Nom trop long</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Adresse</mat-label>
+        <input matInput formControlName="adresse" required />
+        <mat-error *ngIf="hotelForm.get('adresse')?.hasError('required')">L'adresse est obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Ville</mat-label>
+        <input matInput formControlName="ville" required />
+        <mat-error *ngIf="hotelForm.get('ville')?.hasError('required')">La ville est obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Pays</mat-label>
+        <input matInput formControlName="pays" required />
+        <mat-error *ngIf="hotelForm.get('pays')?.hasError('required')">Le pays est obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Étoiles</mat-label>
+        <mat-select formControlName="etoiles" required>
+          <mat-option *ngFor="let s of [1,2,3,4,5]" [value]="s">{{ s }} étoile(s)</mat-option>
+        </mat-select>
+        <mat-error *ngIf="hotelForm.get('etoiles')?.hasError('required')">Obligatoire</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Prix par nuit (€)</mat-label>
+        <input matInput type="number" formControlName="prixParNuit" required min="0.01" step="0.01" />
+        <mat-error *ngIf="hotelForm.get('prixParNuit')?.hasError('required')">Le prix est obligatoire</mat-error>
+        <mat-error *ngIf="hotelForm.get('prixParNuit')?.hasError('min')">Le prix doit être > 0</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Nombre de chambres totales</mat-label>
+        <input matInput type="number" formControlName="chambresTotales" required min="1" />
+        <mat-error *ngIf="hotelForm.get('chambresTotales')?.hasError('required')">Obligatoire</mat-error>
+        <mat-error *ngIf="hotelForm.get('chambresTotales')?.hasError('min')">Doit être au moins 1</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="4"></textarea>
+        <mat-hint>Max 600 caractères</mat-hint>
+        <mat-error *ngIf="hotelForm.get('description')?.hasError('maxlength')">Description trop longue</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="equipements-section">
+      <div class="equipements-header">
+        <div class="title">Équipements</div>
+        <div class="subtitle">Ajoute des tags (Wifi, Piscine, Parking...)</div>
+      </div>
+
+      <div class="equipements-input">
+        <mat-form-field appearance="outline" class="equipement-input">
+          <mat-label>Ajouter un équipement</mat-label>
+          <input
+            matInput
+            #equipementInput
+            (keyup.enter)="addEquipement(equipementInput.value); equipementInput.value=''"
+          />
+        </mat-form-field>
+
+        <button
+          mat-icon-button
+          color="primary"
+          matTooltip="Ajouter"
+          (click)="addEquipement(equipementInput.value); equipementInput.value=''"
+          [disabled]="saving"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <div class="chips-container" *ngIf="equipementsArray.controls.length > 0">
+        <mat-chip *ngFor="let eq of equipementsArray.controls; let i = index" (removed)="removeEquipement(i)">
+          {{ eq.value }}
+          <button matChipRemove [disabled]="saving">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      </div>
+
+      <div class="empty-chips" *ngIf="equipementsArray.controls.length === 0">
+        Aucun équipement ajouté.
+      </div>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="saving">Annuler</button>
+
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="hotelForm.invalid || saving"
+  >
+    {{ saving ? 'Enregistrement...' : (isEditMode ? 'Modifier' : 'Ajouter') }}
+  </button>
+</mat-dialog-actions>

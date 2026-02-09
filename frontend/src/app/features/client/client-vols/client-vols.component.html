@@ -1,0 +1,311 @@
+<div class="vols-page">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>
+          <span class="icon">✈️</span>
+          Recherche de Vols
+        </h1>
+        <p class="subtitle">Trouvez le vol parfait pour votre prochain voyage</p>
+      </div>
+      <button class="btn-refresh" (click)="load()" [disabled]="loading">
+        <span class="refresh-icon" [class.spinning]="loading">🔄</span>
+        {{ loading ? 'Chargement...' : 'Actualiser' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-card">
+    <div class="filters-header">
+      <h3>🔍 Filtres de recherche</h3>
+      <button class="btn-reset" (click)="resetFilters()">Réinitialiser</button>
+    </div>
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Aéroport de départ</label>
+        <input 
+          type="text" 
+          class="input-field" 
+          placeholder="Ex: Paris CDG"
+          [(ngModel)]="fDepart" 
+          (ngModelChange)="applyFilters()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Aéroport d'arrivée</label>
+        <input 
+          type="text" 
+          class="input-field" 
+          placeholder="Ex: New York JFK"
+          [(ngModel)]="fArrivee" 
+          (ngModelChange)="applyFilters()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Date de départ</label>
+        <input 
+          type="date" 
+          class="input-field" 
+          [(ngModel)]="fDate" 
+          (ngModelChange)="applyFilters()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Prix maximum</label>
+        <input 
+          type="number" 
+          class="input-field" 
+          min="0" 
+          placeholder="€"
+          [(ngModel)]="fPrixMax" 
+          (ngModelChange)="applyFilters()"
+        />
+      </div>
+
+      <div class="filter-group checkbox-group">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="fOnlyAvailable"
+            (ngModelChange)="applyFilters()"
+          />
+          <span>Uniquement les vols disponibles</span>
+        </label>
+      </div>
+    </div>
+    <div class="results-count">
+      <span>{{ vols.length }} vol(s) trouvé(s)</span>
+    </div>
+  </div>
+
+  <!-- Round Trip Selection Card -->
+  <div class="selection-card" *ngIf="selectedAller || roundTrip">
+    <div class="selection-header">
+      <h3>📋 Votre sélection</h3>
+      <label class="round-trip-toggle">
+        <input 
+          type="checkbox" 
+          [(ngModel)]="roundTrip" 
+          (change)="onToggleRoundTrip()"
+        />
+        <span>Aller / Retour</span>
+      </label>
+    </div>
+
+    <div class="selection-content">
+      <div class="selected-flight" *ngIf="selectedAller">
+        <div class="flight-info">
+          <span class="flight-label">Aller:</span>
+          <span class="flight-number">{{ selectedAller.numeroVol }}</span>
+          <span class="flight-route">
+            {{ selectedAller.aeroportDepart }} → {{ selectedAller.aeroportArrivee }}
+          </span>
+        </div>
+        <div class="flight-price">{{ formatPrice(selectedAller.prixBase) }}</div>
+      </div>
+
+      <div class="selected-flight" *ngIf="roundTrip && selectedRetour && selectedAller">
+        <div class="flight-info">
+          <span class="flight-label">Retour:</span>
+          <span class="flight-number">{{ selectedRetour.numeroVol }}</span>
+          <span class="flight-route">
+            {{ selectedRetour.aeroportArrivee }} → {{ selectedAller.aeroportDepart }}
+          </span>
+        </div>
+        <div class="flight-price">{{ formatPrice(selectedRetour.prixBase) }}</div>
+      </div>
+
+      <div class="reservation-controls" *ngIf="selectedAller">
+        <div class="places-input-group">
+          <label>Nombre de places</label>
+          <input 
+            type="number" 
+            class="places-input"
+            [min]="1" 
+            [max]="maxPlacesSelection()"
+            [(ngModel)]="nbPlacesSelection"
+          />
+          <span class="max-places">(max: {{ maxPlacesSelection() }})</span>
+        </div>
+        <button 
+          class="btn-reserve"
+          (click)="reserveSelection()"
+          [disabled]="!canReserveSelection() || reserving"
+        >
+          <span *ngIf="!reserving">Réserver maintenant</span>
+          <span *ngIf="reserving">Traitement...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Chargement des vols...</p>
+  </div>
+
+  <!-- Flights List -->
+  <div class="flights-container" *ngIf="!loading">
+    <div class="flights-grid" *ngIf="vols.length > 0">
+      <div 
+        class="flight-card" 
+        *ngFor="let v of vols"
+        [class.unavailable]="v.placesDisponibles <= 0"
+      >
+        <div class="flight-card-header">
+          <div class="flight-number-badge">{{ v.numeroVol }}</div>
+          <div class="availability-badge" [ngClass]="v.placesDisponibles <= 0 ? 'badge-full' : 'badge-available'">
+            {{ v.placesDisponibles <= 0 ? 'COMPLET' : v.placesDisponibles + ' places' }}
+          </div>
+        </div>
+
+        <div class="flight-route-section">
+          <div class="route-info">
+            <div class="airport departure">
+              <span class="airport-code">{{ v.aeroportDepart }}</span>
+              <span class="airport-time">{{ formatDate(v.dateHeureDepart) }}</span>
+            </div>
+            <div class="route-line">
+              <div class="route-dot start"></div>
+              <div class="route-path"></div>
+              <div class="route-dot end"></div>
+            </div>
+            <div class="airport arrival">
+              <span class="airport-code">{{ v.aeroportArrivee }}</span>
+              <span class="airport-time">{{ formatDate(v.dateHeureArrivee) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flight-details">
+          <div class="detail-item">
+            <span class="detail-label">Compagnie</span>
+            <span class="detail-value">{{ v.compagnie }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Prix</span>
+            <span class="detail-value price-value">{{ formatPrice(v.prixBase) }}</span>
+          </div>
+        </div>
+
+        <div class="flight-actions">
+          <button class="btn-details" (click)="openDetails(v)">
+            📋 Détails
+          </button>
+          <button 
+            class="btn-select"
+            [class.selected]="selectedAller?.id === v.id"
+            (click)="selectAller(v)"
+            [disabled]="v.placesDisponibles <= 0"
+          >
+            {{ selectedAller?.id === v.id ? '✓ Aller sélectionné' : 'Sélectionner Aller' }}
+          </button>
+          <button 
+            class="btn-select"
+            *ngIf="roundTrip"
+            [class.selected]="selectedRetour?.id === v.id"
+            (click)="selectRetour(v)"
+            [disabled]="!selectedAller || v.placesDisponibles <= 0 || v.id === selectedAller.id"
+          >
+            {{ selectedRetour?.id === v.id ? '✓ Retour sélectionné' : 'Sélectionner Retour' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="vols.length === 0">
+      <div class="empty-icon">✈️</div>
+      <h3>Aucun vol trouvé</h3>
+      <p>Essayez de modifier vos critères de recherche</p>
+    </div>
+  </div>
+
+  <!-- Message Alert -->
+  <div 
+    class="alert-message" 
+    *ngIf="message"
+    [class.alert-success]="message.includes('✅')"
+    [class.alert-error]="!message.includes('✅')"
+  >
+    <span class="alert-icon">{{ message.includes('✅') ? '✅' : '❌' }}</span>
+    <span>{{ message }}</span>
+  </div>
+
+  <!-- Details Modal -->
+  <div class="modal-backdrop" *ngIf="selectedVol" (click)="closeDetails()"></div>
+  <div class="modal-container" *ngIf="selectedVol">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Détails du vol</h2>
+        <button class="btn-close" (click)="closeDetails()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-flight-info">
+          <div class="modal-flight-header">
+            <div>
+              <h3>{{ selectedVol.numeroVol }}</h3>
+              <p class="flight-route-text">
+                {{ selectedVol.aeroportDepart }} → {{ selectedVol.aeroportArrivee }}
+              </p>
+            </div>
+            <div class="modal-price-box">
+              <div class="modal-price">{{ formatPrice(selectedVol.prixBase) }}</div>
+              <div class="modal-price-label">par place</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-details-grid">
+          <div class="modal-detail-item">
+            <label>Compagnie aérienne</label>
+            <div class="detail-value">{{ selectedVol.compagnie }}</div>
+          </div>
+
+          <div class="modal-detail-item">
+            <label>Date et heure de départ</label>
+            <div class="detail-value">{{ formatDate(selectedVol.dateHeureDepart) }}</div>
+          </div>
+
+          <div class="modal-detail-item">
+            <label>Date et heure d'arrivée</label>
+            <div class="detail-value">{{ formatDate(selectedVol.dateHeureArrivee) }}</div>
+          </div>
+
+          <div class="modal-detail-item">
+            <label>Places disponibles</label>
+            <div class="detail-value">
+              <span [class.text-danger]="selectedVol.placesDisponibles <= 0">
+                {{ selectedVol.placesDisponibles }}
+              </span>
+            </div>
+          </div>
+
+          <div class="modal-detail-item">
+            <label>Statut</label>
+            <div class="detail-value">
+              <span class="status-badge" [ngClass]="{
+                'status-available': selectedVol.statut === 'DISPONIBLE',
+                'status-full': selectedVol.statut === 'COMPLET',
+                'status-canceled': selectedVol.statut === 'ANNULE'
+              }">
+                {{ selectedVol.statut }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-modal-close" (click)="closeDetails()">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,369 @@
+<div class="hotels-page">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>
+          <span class="icon">🏨</span>
+          Recherche d'Hôtels
+        </h1>
+        <p class="subtitle">Trouvez l'hôtel parfait pour votre séjour</p>
+      </div>
+      <button class="btn-refresh" (click)="load()" [disabled]="loading">
+        <span class="refresh-icon" [class.spinning]="loading">🔄</span>
+        {{ loading ? 'Chargement...' : 'Actualiser' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-card">
+    <div class="filters-header">
+      <h3>🔍 Filtres de recherche</h3>
+      <button class="btn-reset" (click)="resetFilters()">Réinitialiser</button>
+    </div>
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Ville</label>
+        <input 
+          type="text" 
+          class="input-field" 
+          placeholder="Ex: Paris"
+          [(ngModel)]="fVille" 
+          (ngModelChange)="applyFilters()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Pays</label>
+        <input 
+          type="text" 
+          class="input-field" 
+          placeholder="Ex: France"
+          [(ngModel)]="fPays" 
+          (ngModelChange)="applyFilters()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Prix min (€/nuit)</label>
+        <input 
+          type="number" 
+          class="input-field" 
+          min="0" 
+          placeholder="Min"
+          [(ngModel)]="fPrixMin" 
+          (ngModelChange)="applyFilters()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Prix max (€/nuit)</label>
+        <input 
+          type="number" 
+          class="input-field" 
+          min="0" 
+          placeholder="Max"
+          [(ngModel)]="fPrixMax" 
+          (ngModelChange)="applyFilters()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Étoiles</label>
+        <select 
+          class="input-field"
+          [(ngModel)]="fStars" 
+          (ngModelChange)="applyFilters()"
+        >
+          <option [value]="null">Toutes</option>
+          <option [value]="1">1 étoile</option>
+          <option [value]="2">2 étoiles</option>
+          <option [value]="3">3 étoiles</option>
+          <option [value]="4">4 étoiles</option>
+          <option [value]="5">5 étoiles</option>
+        </select>
+      </div>
+
+      <div class="filter-group checkbox-group">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="fOnlyAvailable"
+            (ngModelChange)="applyFilters()"
+          />
+          <span>Uniquement les hôtels disponibles</span>
+        </label>
+      </div>
+    </div>
+    <div class="results-count">
+      <span>{{ hotels.length }} hôtel(s) trouvé(s)</span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Chargement des hôtels...</p>
+  </div>
+
+  <!-- Hotels Grid -->
+  <div class="hotels-container" *ngIf="!loading">
+    <div class="hotels-grid" *ngIf="hotels.length > 0">
+      <div 
+        class="hotel-card" 
+        *ngFor="let h of hotels"
+        [class.unavailable]="h.chambresDisponibles <= 0"
+      >
+        <div class="hotel-card-header">
+          <div class="hotel-name-section">
+            <h3 class="hotel-name">{{ h.nom }}</h3>
+            <div class="hotel-location">
+              <span class="location-icon">📍</span>
+              <span>{{ h.ville }}, {{ h.pays }}</span>
+            </div>
+          </div>
+          <div class="hotel-stars">
+            <span class="stars-text">{{ starsText(h.etoiles) }}</span>
+            <span class="stars-count">{{ h.etoiles }} étoiles</span>
+          </div>
+        </div>
+
+        <div class="hotel-info-section">
+          <div class="info-item">
+            <span class="info-label">Prix par nuit</span>
+            <span class="info-value price">{{ formatPrice(h.prixParNuit) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Disponibilité</span>
+            <span 
+              class="availability-badge"
+              [ngClass]="h.chambresDisponibles <= 0 ? 'badge-full' : 'badge-available'"
+            >
+              {{ h.chambresDisponibles <= 0 ? 'COMPLET' : h.chambresDisponibles + ' chambres' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="hotel-booking-section">
+          <div class="booking-dates">
+            <div class="date-input-group">
+              <label>Arrivée</label>
+              <input 
+                type="date" 
+                class="date-input"
+                [min]="todayISO()"
+                [(ngModel)]="checkIn[h.id!]"
+                [disabled]="h.chambresDisponibles <= 0"
+              />
+            </div>
+            <div class="date-input-group">
+              <label>Départ</label>
+              <input 
+                type="date" 
+                class="date-input"
+                [min]="checkIn[h.id!] || todayISO()"
+                [(ngModel)]="checkOut[h.id!]"
+                [disabled]="h.chambresDisponibles <= 0"
+              />
+            </div>
+            <div class="date-input-group">
+              <label>Chambres</label>
+              <input 
+                type="number" 
+                class="date-input"
+                min="1"
+                [max]="h.chambresDisponibles"
+                [(ngModel)]="rooms[h.id!]"
+                [disabled]="h.chambresDisponibles <= 0"
+              />
+            </div>
+          </div>
+
+          <div class="booking-summary" *ngIf="checkIn[h.id!] && checkOut[h.id!]">
+            <div class="summary-item">
+              <span>{{ calculateNights(checkIn[h.id!], checkOut[h.id!]) }} nuit(s)</span>
+              <span>× {{ rooms[h.id!] || 1 }} chambre(s)</span>
+            </div>
+            <div class="summary-total">
+              <span>Total:</span>
+              <span class="total-price">
+                {{ formatPrice(calculateTotal(h, checkIn[h.id!], checkOut[h.id!], rooms[h.id!] || 1)) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="hotel-actions">
+            <button class="btn-details" (click)="openDetails(h)">
+              📋 Détails
+            </button>
+            <button 
+              class="btn-reserve"
+              (click)="reserve(h)"
+              [disabled]="h.chambresDisponibles <= 0 
+                        || !checkIn[h.id!] 
+                        || !checkOut[h.id!] 
+                        || (rooms[h.id!] || 1) > h.chambresDisponibles
+                        || reservingHotelId === h.id"
+            >
+              <span *ngIf="reservingHotelId !== h.id">Réserver maintenant</span>
+              <span *ngIf="reservingHotelId === h.id">Traitement...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="hotels.length === 0">
+      <div class="empty-icon">🏨</div>
+      <h3>Aucun hôtel trouvé</h3>
+      <p>Essayez de modifier vos critères de recherche</p>
+    </div>
+  </div>
+
+  <!-- Message Alert -->
+  <div 
+    class="alert-message" 
+    *ngIf="message"
+    [class.alert-success]="message.includes('✅')"
+    [class.alert-error]="!message.includes('✅')"
+  >
+    <span class="alert-icon">{{ message.includes('✅') ? '✅' : '❌' }}</span>
+    <span>{{ message }}</span>
+  </div>
+
+  <!-- Details Modal -->
+  <div class="modal-backdrop" *ngIf="selectedHotel" (click)="closeDetails()"></div>
+  <div class="modal-container" *ngIf="selectedHotel">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Détails de l'hôtel</h2>
+        <button class="btn-close" (click)="closeDetails()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-hotel-info">
+          <div class="modal-hotel-header">
+            <div class="hotel-title-section">
+              <h3>{{ selectedHotel.nom }}</h3>
+              <div class="hotel-meta">
+                <span class="location">
+                  <span class="location-icon">📍</span>
+                  {{ selectedHotel.ville }}, {{ selectedHotel.pays }}
+                </span>
+                <span class="separator">•</span>
+                <span class="stars">{{ starsText(selectedHotel.etoiles) }}</span>
+                <span class="stars-count">{{ selectedHotel.etoiles }} étoiles</span>
+              </div>
+            </div>
+            <div class="modal-price-box">
+              <div class="modal-price">{{ formatPrice(selectedHotel.prixParNuit) }}</div>
+              <div class="modal-price-label">par nuit</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-details-grid">
+          <div class="modal-detail-item full-width">
+            <label>Adresse</label>
+            <div class="detail-value">{{ selectedHotel.adresse }}</div>
+          </div>
+
+          <div class="modal-detail-item">
+            <label>Disponibilité</label>
+            <div class="detail-value">
+              {{ selectedHotel.chambresDisponibles }} disponible(s) / {{ selectedHotel.chambresTotales }} total
+            </div>
+          </div>
+
+          <div class="modal-detail-item">
+            <label>Classification</label>
+            <div class="detail-value">
+              <span class="stars-display">{{ starsText(selectedHotel.etoiles) }}</span>
+              {{ selectedHotel.etoiles }} / 5 étoiles
+            </div>
+          </div>
+
+          <div class="modal-detail-item full-width" *ngIf="selectedHotel.description">
+            <label>Description</label>
+            <div class="detail-value description">{{ selectedHotel.description }}</div>
+          </div>
+
+          <div class="modal-detail-item full-width" *ngIf="selectedHotel.equipements && selectedHotel.equipements.length > 0">
+            <label>Équipements</label>
+            <div class="equipments-list">
+              <span class="equipment-chip" *ngFor="let e of selectedHotel.equipements">
+                {{ e }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-booking-section">
+          <h4>Réserver cet hôtel</h4>
+          <div class="modal-booking-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Date d'arrivée</label>
+                <input 
+                  type="date" 
+                  class="form-input"
+                  [min]="todayISO()"
+                  [(ngModel)]="checkIn[selectedHotel.id!]"
+                />
+              </div>
+              <div class="form-group">
+                <label>Date de départ</label>
+                <input 
+                  type="date" 
+                  class="form-input"
+                  [min]="checkIn[selectedHotel.id!] || todayISO()"
+                  [(ngModel)]="checkOut[selectedHotel.id!]"
+                />
+              </div>
+              <div class="form-group">
+                <label>Nombre de chambres</label>
+                <input 
+                  type="number" 
+                  class="form-input"
+                  min="1"
+                  [max]="selectedHotel.chambresDisponibles"
+                  [(ngModel)]="rooms[selectedHotel.id!]"
+                />
+              </div>
+            </div>
+            <div class="booking-total" *ngIf="checkIn[selectedHotel.id!] && checkOut[selectedHotel.id!]">
+              <div class="total-breakdown">
+                <span>{{ calculateNights(checkIn[selectedHotel.id!], checkOut[selectedHotel.id!]) }} nuit(s)</span>
+                <span>×</span>
+                <span>{{ rooms[selectedHotel.id!] || 1 }} chambre(s)</span>
+                <span>×</span>
+                <span>{{ formatPrice(selectedHotel.prixParNuit) }}/nuit</span>
+              </div>
+              <div class="total-amount">
+                <span>Total:</span>
+                <span class="amount">{{ formatPrice(calculateTotal(selectedHotel, checkIn[selectedHotel.id!], checkOut[selectedHotel.id!], rooms[selectedHotel.id!] || 1)) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-modal-secondary" (click)="closeDetails()">Fermer</button>
+        <button 
+          class="btn-modal-primary"
+          (click)="reserveFromModal()"
+          [disabled]="selectedHotel.chambresDisponibles <= 0 
+                    || !checkIn[selectedHotel.id!] 
+                    || !checkOut[selectedHotel.id!]
+                    || reservingHotelId === selectedHotel.id"
+        >
+          <span *ngIf="reservingHotelId !== selectedHotel.id">Réserver maintenant</span>
+          <span *ngIf="reservingHotelId === selectedHotel.id">Traitement...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

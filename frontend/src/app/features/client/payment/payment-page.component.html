@@ -1,0 +1,88 @@
+<div class="payment-page">
+  <div class="payment-container">
+    <div class="payment-card">
+      <!-- Header -->
+      <div class="payment-header">
+        <div class="header-icon">💳</div>
+        <h1 class="payment-title">Paiement de la réservation</h1>
+        <p class="payment-subtitle">Finalisez votre réservation en quelques clics</p>
+      </div>
+
+      <!-- Reservation Info -->
+      <div class="reservation-info">
+        <div class="info-badge">
+          <span class="badge-label">Type</span>
+          <span class="badge-value">{{ type }}</span>
+        </div>
+        <div class="info-badge alt">
+          <span class="badge-label">Réservation</span>
+          <span class="badge-value">#{{ reservationId }}</span>
+        </div>
+      </div>
+
+      <!-- Payment Form -->
+      <form [formGroup]="form" (ngSubmit)="pay()" class="payment-form">
+        <div class="form-group">
+          <label class="form-label">
+            <span class="label-icon">💳</span>
+            Méthode de paiement
+          </label>
+          <select formControlName="method" class="form-select">
+            <option value="CARD">💳 Carte bancaire</option>
+            <option value="CASH">💵 Espèces</option>
+            <option value="MOBILE_MONEY">📱 Mobile Money</option>
+          </select>
+          <div class="form-hint">Sélectionnez votre méthode de paiement préférée</div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-secondary" type="button" (click)="back()">
+            <span class="btn-icon">←</span>
+            <span>Retour</span>
+          </button>
+          <button class="btn-primary" type="submit" [disabled]="form.invalid || processing">
+            <span *ngIf="!processing">
+              <span class="btn-icon">💳</span>
+              <span>Payer maintenant</span>
+            </span>
+            <span *ngIf="processing">
+              <span class="spinner-small"></span>
+              <span>Traitement...</span>
+            </span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Message Alert -->
+      <div 
+        *ngIf="msg" 
+        class="alert-message" 
+        [class.alert-success]="msgOk" 
+        [class.alert-error]="!msgOk"
+      >
+        <span class="alert-icon">{{ msgOk ? '✅' : '❌' }}</span>
+        <span>{{ msg }}</span>
+      </div>
+
+      <!-- Payment Methods Info -->
+      <div class="payment-methods-info">
+        <h3>Méthodes de paiement acceptées</h3>
+        <div class="methods-grid">
+          <div class="method-item">
+            <span class="method-icon">💳</span>
+            <span class="method-name">Carte bancaire</span>
+          </div>
+          <div class="method-item">
+            <span class="method-icon">💵</span>
+            <span class="method-name">Espèces</span>
+          </div>
+          <div class="method-item">
+            <span class="method-icon">📱</span>
+            <span class="method-name">Mobile Money</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,260 @@
+<div class="admin-panel">
+  <!-- Contenu principal -->
+  <div class="main-content">
+    <!-- Header de la page -->
+    <div class="page-header">
+      <div class="page-title">
+        <h2>Vols</h2>
+        <div class="page-subtitle">
+          <mat-icon>filter_list</mat-icon>
+          <span>Affichés {{ shownCount() }} / {{ total }}</span>
+        </div>
+      </div>
+
+      <div class="page-actions">
+        <div class="action-container">
+          <button mat-stroked-button (click)="load()" [disabled]="loading" class="refresh-btn">
+            <mat-icon>refresh</mat-icon>
+            <span>Rafraîchir</span>
+          </button>
+
+          <button mat-raised-button color="primary" (click)="openCreate()" class="add-btn">
+            <mat-icon>add</mat-icon>
+            <span>Ajouter un vol</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtres simplifiés -->
+    <div class="filters-bar">
+      <div class="filters-left">
+        <!-- Recherche -->
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input 
+            matInput 
+            [formControl]="q" 
+            placeholder="Rechercher N°, compagnie, aéroport..."
+          >
+        </mat-form-field>
+
+        <!-- Statut -->
+        <mat-form-field appearance="outline" class="status-field">
+          <mat-select [formControl]="statut" placeholder="Statut">
+            <mat-option [value]="''">Tous les statuts</mat-option>
+            <mat-option value="DISPONIBLE">
+              <span class="status-option available">DISPONIBLE</span>
+            </mat-option>
+            <mat-option value="COMPLET">
+              <span class="status-option full">COMPLET</span>
+            </mat-option>
+            <mat-option value="ANNULE">
+              <span class="status-option cancelled">ANNULE</span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Min places -->
+        <mat-form-field appearance="outline" class="places-field">
+          <input 
+            matInput 
+            type="number" 
+            [formControl]="minPlaces" 
+            min="0" 
+            placeholder="Min places"
+          >
+        </mat-form-field>
+      </div>
+
+      <div class="filters-right">
+        <button mat-stroked-button (click)="resetFilters()" class="reset-btn">
+          <mat-icon>restart_alt</mat-icon>
+          <span>Reset</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tableau -->
+    <div class="table-container">
+      <!-- Loading -->
+      <div *ngIf="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <span>Chargement...</span>
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="!loading" class="table-wrapper">
+        <table mat-table [dataSource]="dataSource" matSort>
+          <!-- N° Vol -->
+          <ng-container matColumnDef="numeroVol">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <div class="column-header">
+                <mat-icon>confirmation_number</mat-icon>
+                <span>N°</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let v">
+              <div class="flight-number">
+                <div class="flight-code">{{ v.numeroVol }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Compagnie -->
+          <ng-container matColumnDef="compagnie">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <div class="column-header">
+                <mat-icon>business</mat-icon>
+                <span>COMPAGNIE</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let v">
+              <div class="company-info">
+                <div class="company-icon">
+                  <mat-icon>airline_seat_flat</mat-icon>
+                </div>
+                <span>{{ v.compagnie }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Trajet -->
+          <ng-container matColumnDef="trajet">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>route</mat-icon>
+                <span>TRAJET</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let v">
+              <div class="route-info">
+                <div class="route-line">
+                  <div class="departure">
+                    <mat-icon class="route-icon">flight_takeoff</mat-icon>
+                    <div class="airport">{{ v.aeroportDepart }}</div>
+                  </div>
+                  <mat-icon class="arrow">arrow_forward</mat-icon>
+                  <div class="arrival">
+                    <mat-icon class="route-icon">flight_land</mat-icon>
+                    <div class="airport">{{ v.aeroportArrivee }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Départ -->
+          <ng-container matColumnDef="depart">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="dateHeureDepart">
+              <div class="column-header">
+                <mat-icon>flight_takeoff</mat-icon>
+                <span>DÉPART</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let v">
+              <div class="datetime-info">
+                <div class="date">{{ formatDate(v.dateHeureDepart) }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Arrivée -->
+          <ng-container matColumnDef="arrivee">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="dateHeureArrivee">
+              <div class="column-header">
+                <mat-icon>flight_land</mat-icon>
+                <span>ARRIVÉE</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let v">
+              <div class="datetime-info">
+                <div class="date">{{ formatDate(v.dateHeureArrivee) }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Places -->
+          <ng-container matColumnDef="places">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="placesDisponibles">
+              <div class="column-header">
+                <mat-icon>airline_seat_recline_normal</mat-icon>
+                <span>PLACES</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let v">
+              <div class="seats-info">
+                <div class="seats-count">{{ v.placesDisponibles }}</div>
+                <div class="seats-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="getSeatsPercentage(v)"></div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Prix -->
+          <ng-container matColumnDef="prix">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="prixBase">
+              <div class="column-header">
+                <mat-icon>euro</mat-icon>
+                <span>PRIX</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let v">
+              <div class="price-info">
+                <span class="price-amount">{{ v.prixBase }} €</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Statut -->
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>flag</mat-icon>
+                <span>STATUT</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let v">
+              <span [class]="badgeClass(v)">{{ v.statut }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>settings</mat-icon>
+                <span>ACTIONS</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let v" class="actions-cell">
+              <div class="actions-buttons">
+                <button mat-icon-button (click)="openEdit(v)" matTooltip="Modifier" class="edit-btn">
+                  <mat-icon class="edit-icon">edit</mat-icon>
+                </button>
+                <button mat-icon-button (click)="delete(v)" matTooltip="Supprimer" class="delete-btn">
+                  <mat-icon class="delete-icon">delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+
+      <!-- État vide -->
+      <div *ngIf="!loading && shownCount() === 0" class="empty-state">
+        <div class="empty-icon">
+          <mat-icon>airplanemode_inactive</mat-icon>
+        </div>
+        <h3>Aucun vol trouvé</h3>
+        <p>{{ hasActiveFilters() ? 'Aucun résultat pour les filtres actuels.' : 'Aucun vol disponible.' }}</p>
+      </div>
+    </div>
+  </div>
+</div>

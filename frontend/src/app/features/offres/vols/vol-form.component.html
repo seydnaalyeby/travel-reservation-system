@@ -1,0 +1,127 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Modifier' : 'Ajouter' }} un vol</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="volForm" class="vol-form">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Numéro de vol</mat-label>
+      <input matInput formControlName="numeroVol" placeholder="Ex: TS-001" required>
+      <mat-hint>2 à 15 caractères (A-Z, 0-9, -)</mat-hint>
+
+      <mat-error *ngIf="volForm.get('numeroVol')?.hasError('required')">
+        Le numéro de vol est obligatoire
+      </mat-error>
+      <mat-error *ngIf="volForm.get('numeroVol')?.hasError('pattern')">
+        Format invalide (ex: TS-001)
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Compagnie</mat-label>
+      <input matInput formControlName="compagnie" required>
+      <mat-error *ngIf="volForm.get('compagnie')?.hasError('required')">
+        La compagnie est obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Aéroport de départ</mat-label>
+        <input matInput formControlName="aeroportDepart" required>
+        <mat-error *ngIf="volForm.get('aeroportDepart')?.hasError('required')">
+          Obligatoire
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Aéroport d'arrivée</mat-label>
+        <input matInput formControlName="aeroportArrivee" required>
+        <mat-error *ngIf="volForm.get('aeroportArrivee')?.hasError('required')">
+          Obligatoire
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="alert-error" *ngIf="volForm.hasError('sameAirports')">
+      ❌ L'aéroport de départ et d'arrivée ne peuvent pas être identiques.
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Date départ</mat-label>
+        <input matInput [matDatepicker]="dp1" formControlName="dateHeureDepart" required>
+        <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+        <mat-datepicker #dp1></mat-datepicker>
+        <mat-error *ngIf="volForm.get('dateHeureDepart')?.hasError('required')">
+          Obligatoire
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Heure départ</mat-label>
+        <input matInput type="time" formControlName="heureDepart">
+        <mat-error *ngIf="volForm.get('heureDepart')?.hasError('pattern')">
+          Heure invalide
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Date arrivée</mat-label>
+        <input matInput [matDatepicker]="dp2" formControlName="dateHeureArrivee" required>
+        <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+        <mat-datepicker #dp2></mat-datepicker>
+        <mat-error *ngIf="volForm.get('dateHeureArrivee')?.hasError('required')">
+          Obligatoire
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Heure arrivée</mat-label>
+        <input matInput type="time" formControlName="heureArrivee">
+        <mat-error *ngIf="volForm.get('heureArrivee')?.hasError('pattern')">
+          Heure invalide
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="alert-error" *ngIf="volForm.hasError('arrivalBeforeDeparture')">
+      ❌ La date/heure d’arrivée doit être après la date/heure de départ.
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Places disponibles</mat-label>
+        <input matInput type="number" formControlName="placesDisponibles" min="0">
+        <mat-error *ngIf="volForm.get('placesDisponibles')?.hasError('min')">
+          Doit être ≥ 0
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Prix de base</mat-label>
+        <input matInput type="number" formControlName="prixBase" min="0.01" step="0.01">
+        <mat-error *ngIf="volForm.get('prixBase')?.hasError('min')">
+          Doit être > 0
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Statut</mat-label>
+      <mat-select formControlName="statut">
+        <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Annuler</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()">
+    {{ isEditMode ? 'Enregistrer' : 'Créer' }}
+  </button>
+</mat-dialog-actions>
+   

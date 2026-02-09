@@ -1,0 +1,71 @@
+.hotel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 860px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 800px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.equipements-section {
+  margin-top: 6px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #fafafa;
+  border: 1px solid #eee;
+}
+
+.equipements-header {
+  margin-bottom: 8px;
+
+  .title {
+    font-weight: 600;
+  }
+  .subtitle {
+    font-size: 12px;
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+}
+
+.equipements-input {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.equipement-input {
+  flex: 1;
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.empty-chips {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+mat-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto;
+}

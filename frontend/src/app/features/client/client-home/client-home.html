@@ -1,0 +1,54 @@
+<div class="client-layout">
+  <!-- Top Navigation Bar -->
+  <header class="client-topbar">
+    <div class="topbar-left">
+      <div class="logo-section">
+        <span class="logo-icon">✈️</span>
+        <div class="logo-text">
+          <h2>Travel Booking</h2>
+          <p class="user-greeting">Bienvenue, {{ user?.fullName || 'Client' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <div class="tabs-container">
+        <button
+          class="tab"
+          [class.active]="activeTab === 'vols'"
+          (click)="setTab('vols')">
+          <span class="tab-icon">✈️</span>
+          <span class="tab-text">Vols</span>
+        </button>
+
+        <button
+          class="tab"
+          [class.active]="activeTab === 'hotels'"
+          (click)="setTab('hotels')">
+          <span class="tab-icon">🏨</span>
+          <span class="tab-text">Hôtels</span>
+        </button>
+
+        <button
+          class="tab"
+          [class.active]="activeTab === 'reservations'"
+          (click)="setTab('reservations')">
+          <span class="tab-icon">📋</span>
+          <span class="tab-text">Mes réservations</span>
+        </button>
+      </div>
+
+      <button class="btn-logout" (click)="logout()">
+        <span class="logout-icon">🚪</span>
+        <span class="logout-text">Déconnexion</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="client-content">
+    <app-client-vols *ngIf="activeTab === 'vols'"></app-client-vols>
+    <app-client-hotels *ngIf="activeTab === 'hotels'"></app-client-hotels>
+    <app-client-reservations *ngIf="activeTab === 'reservations'"></app-client-reservations>
+  </main>
+</div>

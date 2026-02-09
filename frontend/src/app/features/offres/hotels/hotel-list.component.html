@@ -1,0 +1,301 @@
+<div class="admin-container">
+  <!-- Header principal -->
+  <div class="admin-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>Gestion des Hôtels</h1>
+      </div>
+      
+      <div class="header-actions">
+        <button mat-stroked-button (click)="loadHotels()" [disabled]="loading()" class="refresh-btn">
+          <mat-icon [class.spin]="loading()">refresh</mat-icon>
+          {{ loading() ? 'Chargement...' : 'Rafraîchir' }}
+        </button>
+
+        <button mat-raised-button color="primary" (click)="openForm()" class="add-btn">
+          <mat-icon>add_circle</mat-icon>
+          Ajouter un hôtel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Filtres compacte -->
+  <div class="filters-bar">
+    <div class="filters-left">
+      <!-- Recherche principale -->
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          [(ngModel)]="filters().q"
+          (ngModelChange)="applyFilters()"
+          placeholder="Rechercher nom, ville, pays..."
+        />
+        <button
+          *ngIf="filters().q"
+          matSuffix
+          mat-icon-button
+          (click)="filters().q=''; applyFilters()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!-- Étoiles -->
+      <mat-form-field appearance="outline" class="stars-field">
+        <mat-select [(ngModel)]="filters().etoiles" (selectionChange)="applyFilters()" placeholder="Étoiles">
+          <mat-option [value]="null">Toutes étoiles</mat-option>
+          <mat-option [value]="1">⭐ 1 étoile</mat-option>
+          <mat-option [value]="2">⭐⭐ 2 étoiles</mat-option>
+          <mat-option [value]="3">⭐⭐⭐ 3 étoiles</mat-option>
+          <mat-option [value]="4">⭐⭐⭐⭐ 4 étoiles</mat-option>
+          <mat-option [value]="5">⭐⭐⭐⭐⭐ 5 étoiles</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Prix max -->
+      <mat-form-field appearance="outline" class="price-field">
+        <input
+          matInput
+          type="number"
+          [(ngModel)]="filters().prixMax"
+          (ngModelChange)="applyFilters()"
+          placeholder="Prix max"
+          min="0"
+        />
+        <span matSuffix>€</span>
+      </mat-form-field>
+    </div>
+
+    <div class="filters-right">
+      <!-- Stats -->
+      <div class="quick-stats">
+        <span class="stat-item">
+          <mat-icon>filter_list</mat-icon>
+          {{ shownCount() }}/{{ totalCount() }}
+        </span>
+        <span class="stat-item">
+          <mat-icon>star</mat-icon>
+          {{ getAverageStars() }}
+        </span>
+        <span class="stat-item">
+          <mat-icon>euro</mat-icon>
+          {{ getAveragePrice() | number:'1.0-0' }}€
+        </span>
+      </div>
+
+      <!-- Reset -->
+      <button mat-stroked-button (click)="resetFilters()" class="reset-btn" [disabled]="!hasActiveFilters()">
+        <mat-icon>restart_alt</mat-icon>
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div class="content-section">
+    <!-- État de chargement -->
+    <div *ngIf="loading()" class="loading-state">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Chargement des hôtels...</div>
+    </div>
+
+    <!-- État vide -->
+    <div *ngIf="!loading() && shownCount() === 0" class="empty-state">
+      <div class="empty-icon">
+        <mat-icon>hotel</mat-icon>
+      </div>
+      <h3>{{ hasActiveFilters() ? 'Aucun résultat' : 'Aucun hôtel' }}</h3>
+      <p>{{ hasActiveFilters() ? 'Aucun hôtel ne correspond à vos critères de recherche.' : 'Commencez par ajouter votre premier hôtel.' }}</p>
+      <button *ngIf="!hasActiveFilters()" mat-raised-button color="primary" (click)="openForm()" class="empty-action">
+        <mat-icon>add</mat-icon>
+        Ajouter un hôtel
+      </button>
+      <button *ngIf="hasActiveFilters()" mat-stroked-button (click)="resetFilters()" class="empty-action">
+        <mat-icon>filter_alt_off</mat-icon>
+        Réinitialiser les filtres
+      </button>
+    </div>
+
+    <!-- Tableau des hôtels -->
+    <div *ngIf="!loading() && shownCount() > 0" class="hotels-table">
+      <div class="table-container">
+        <table mat-table [dataSource]="paginatedHotels()" class="hotels-data-table">
+          <!-- ID -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>tag</mat-icon>
+                <span>ID</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let hotel">
+              <div class="hotel-id">{{ hotel.id }}</div>
+            </td>
+          </ng-container>
+
+          <!-- Nom -->
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>hotel</mat-icon>
+                <span>HÔTEL</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let hotel">
+              <div class="hotel-info">
+                <div class="hotel-name">{{ hotel.nom }}</div>
+                <div class="hotel-location">
+                  <mat-icon class="location-icon">location_on</mat-icon>
+                  <span>{{ hotel.ville }}, {{ hotel.pays }}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Localisation -->
+          <ng-container matColumnDef="localisation">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>place</mat-icon>
+                <span>LOCALISATION</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let hotel">
+              <div class="location-info">
+                <div class="city">{{ hotel.ville }}</div>
+                <div class="country">{{ hotel.pays }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Étoiles -->
+          <ng-container matColumnDef="etoiles">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>star</mat-icon>
+                <span>CLASSEMENT</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let hotel">
+              <div class="stars-rating">
+                <div class="stars">
+                  <span *ngFor="let i of getStarsArray(hotel.etoiles)">
+                    <mat-icon>star</mat-icon>
+                  </span>
+                </div>
+                <div class="stars-label">{{ hotel.etoiles }} étoile{{ hotel.etoiles > 1 ? 's' : '' }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Prix par nuit -->
+          <ng-container matColumnDef="prixParNuit">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>euro</mat-icon>
+                <span>PRIX/NUIT</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let hotel">
+              <div class="price-cell">
+                <div class="price-amount">{{ hotel.prixParNuit | number:'1.0-0' }} €</div>
+                <div class="price-label">par nuit</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Chambres totales -->
+          <ng-container matColumnDef="chambresTotales">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>meeting_room</mat-icon>
+                <span>CHAMBRES</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let hotel">
+              <div class="rooms-cell">
+                <div class="rooms-count">{{ hotel.chambresTotales }}</div>
+                <div class="rooms-label">disponibles</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Équipements -->
+          <ng-container matColumnDef="equipements">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>check_circle</mat-icon>
+                <span>ÉQUIPEMENTS</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let hotel">
+              <div class="equipements-cell">
+                <div class="equipements-list">
+                  <span *ngFor="let eq of safeEquipements(hotel).slice(0, 2)" class="equipement-tag">
+                    {{ eq }}
+                  </span>
+                  <span *ngIf="safeEquipements(hotel).length > 2" class="equipement-more">
+                    +{{ safeEquipements(hotel).length - 2 }}
+                  </span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>settings</mat-icon>
+                <span>ACTIONS</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let hotel" class="actions-cell">
+              <div class="actions-buttons">
+                <button mat-icon-button (click)="openForm(hotel)" matTooltip="Modifier" class="action-btn edit-btn">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button (click)="deleteHotel(hotel)" matTooltip="Supprimer" class="action-btn delete-btn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+
+      <!-- Pagination et info -->
+      <div class="table-footer">
+        <div class="table-summary">
+          <mat-icon>list</mat-icon>
+          <span>{{ shownCount() }} hôtel{{ shownCount() > 1 ? 's' : '' }}</span>
+          <span class="divider">•</span>
+          <span>Page {{ currentPage + 1 }} sur {{ getTotalPages() }}</span>
+        </div>
+        
+        <div class="footer-right">
+          <button mat-stroked-button (click)="exportToCSV()" class="export-btn">
+            <mat-icon>download</mat-icon>
+            Exporter CSV
+          </button>
+          
+          <mat-paginator
+            [length]="filteredHotels().length"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="[5, 10, 20, 50]"
+            [pageIndex]="currentPage"
+            (page)="onPageChange($event)"
+            showFirstLastButtons
+            aria-label="Sélectionner la page"
+          >
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

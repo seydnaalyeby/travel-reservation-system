@@ -1,0 +1,317 @@
+// Variables
+$primary: #3b82f6;
+$primary-dark: #2563eb;
+$primary-light: #60a5fa;
+$purple: #8b5cf6;
+$danger: #ef4444;
+$bg-light: #f8fafc;
+$bg-white: #ffffff;
+$text-primary: #1e293b;
+$text-secondary: #64748b;
+$border-color: #e2e8f0;
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+$radius-md: 12px;
+$radius-lg: 16px;
+
+.client-layout {
+  min-height: 100vh;
+  background: $bg-light;
+  display: flex;
+  flex-direction: column;
+}
+
+// Top Bar
+.client-topbar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px 32px;
+  box-shadow: $shadow-lg;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .logo-icon {
+        font-size: 40px;
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: $radius-md;
+        backdrop-filter: blur(10px);
+      }
+
+      .logo-text {
+        h2 {
+          margin: 0;
+          font-size: 24px;
+          font-weight: 800;
+          line-height: 1.2;
+        }
+
+        .user-greeting {
+          margin: 4px 0 0;
+          font-size: 14px;
+          opacity: 0.9;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    .tabs-container {
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 6px;
+      border-radius: $radius-md;
+      backdrop-filter: blur(10px);
+
+      .tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: $radius-md;
+        border: 2px solid transparent;
+        background: transparent;
+        color: white;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: rgba(255, 255, 255, 0.2);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        &:hover::before {
+          opacity: 1;
+        }
+
+        .tab-icon {
+          font-size: 18px;
+          transition: transform 0.3s ease;
+        }
+
+        .tab-text {
+          position: relative;
+          z-index: 1;
+        }
+
+        &:hover {
+          transform: translateY(-2px);
+
+          .tab-icon {
+            transform: scale(1.2);
+          }
+        }
+
+        &.active {
+          background: white;
+          color: #667eea;
+          border-color: white;
+          box-shadow: $shadow-md;
+
+          &::before {
+            display: none;
+          }
+
+          .tab-icon {
+            transform: scale(1.1);
+          }
+        }
+      }
+    }
+
+    .btn-logout {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: rgba(239, 68, 68, 0.2);
+      border: 2px solid rgba(239, 68, 68, 0.4);
+      border-radius: $radius-md;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+
+      .logout-icon {
+        font-size: 18px;
+        transition: transform 0.3s ease;
+      }
+
+      &:hover {
+        background: $danger;
+        border-color: $danger;
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+
+        .logout-icon {
+          transform: translateX(-2px);
+        }
+      }
+    }
+  }
+}
+
+// Content Area
+.client-content {
+  flex: 1;
+  padding: 24px;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .client-topbar {
+    padding: 16px 24px;
+
+    .topbar-left {
+      .logo-section {
+        .logo-icon {
+          width: 48px;
+          height: 48px;
+          font-size: 32px;
+        }
+
+        .logo-text {
+          h2 {
+            font-size: 20px;
+          }
+
+          .user-greeting {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    .topbar-right {
+      .tabs-container {
+        .tab {
+          padding: 8px 16px;
+          font-size: 13px;
+
+          .tab-text {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .client-topbar {
+    padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+
+    .topbar-left {
+      margin-bottom: 16px;
+
+      .logo-section {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .topbar-right {
+      flex-direction: column;
+      gap: 16px;
+
+      .tabs-container {
+        width: 100%;
+        justify-content: space-between;
+
+        .tab {
+          flex: 1;
+          justify-content: center;
+          padding: 10px 12px;
+
+          .tab-text {
+            display: inline;
+            font-size: 12px;
+          }
+        }
+      }
+
+      .btn-logout {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
+  .client-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .client-topbar {
+    .topbar-right {
+      .tabs-container {
+        flex-direction: column;
+
+        .tab {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+// Animation for tab switching
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.client-content > * {
+  animation: fadeIn 0.3s ease;
+}

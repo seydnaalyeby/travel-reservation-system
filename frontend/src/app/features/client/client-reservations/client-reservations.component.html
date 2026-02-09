@@ -1,0 +1,179 @@
+<div class="reservations-page">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>
+          <span class="icon">📋</span>
+          Mes Réservations
+        </h1>
+        <p class="subtitle">Gérez toutes vos réservations en un seul endroit</p>
+      </div>
+      <button class="btn-refresh" (click)="load()" [disabled]="loading">
+        <span class="refresh-icon" [class.spinning]="loading">🔄</span>
+        {{ loading ? 'Chargement...' : 'Actualiser' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-container" *ngIf="!loading && reservations.length > 0">
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ reservations.length }}</div>
+        <div class="stat-label">Total réservations</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-content">
+        <div class="stat-value">
+          {{ getPendingPaymentCount() }}
+        </div>
+        <div class="stat-label">En attente de paiement</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-value">
+          {{ getConfirmedCount() }}
+        </div>
+        <div class="stat-label">Confirmées</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Chargement de vos réservations...</p>
+  </div>
+
+  <!-- Reservations List -->
+  <div class="reservations-container" *ngIf="!loading">
+    <div class="reservations-list" *ngIf="reservations.length > 0">
+      <div 
+        class="reservation-card" 
+        *ngFor="let r of reservations"
+        [class.canceled]="r.status === 'CANCELED'"
+      >
+        <div class="reservation-header">
+          <div class="reservation-type">
+            <span class="type-icon">{{ getTypeIcon(r.type) }}</span>
+            <span class="type-badge" [ngClass]="r.type === 'VOL' ? 'badge-vol' : 'badge-hotel'">
+              {{ r.type }}
+            </span>
+          </div>
+          <div class="reservation-status">
+            <span class="status-badge" [ngClass]="getStatusClass(r.status)">
+              <span class="status-icon">{{ getStatusIcon(r.status) }}</span>
+              <span>{{ r.status }}</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="reservation-body">
+          <!-- VOL Reservation Details -->
+          <div class="reservation-details" *ngIf="r.type === 'VOL'">
+            <div class="detail-section">
+              <h4>Vol Aller</h4>
+              <div class="detail-content">
+                <div class="detail-item">
+                  <span class="detail-label">Vol:</span>
+                  <span class="detail-value">{{ r.volInfo }}</span>
+                </div>
+                <div class="detail-item" *ngIf="r.nbPlaces">
+                  <span class="detail-label">Places:</span>
+                  <span class="detail-value">{{ r.nbPlaces }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="detail-section" *ngIf="r.volRetourInfo">
+              <h4>Vol Retour</h4>
+              <div class="detail-content">
+                <div class="detail-item">
+                  <span class="detail-label">Vol:</span>
+                  <span class="detail-value">{{ r.volRetourInfo }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- HOTEL Reservation Details -->
+          <div class="reservation-details" *ngIf="r.type === 'HOTEL'">
+            <div class="detail-section">
+              <h4>Informations de séjour</h4>
+              <div class="detail-content">
+                <div class="detail-item">
+                  <span class="detail-label">Hôtel:</span>
+                  <span class="detail-value">{{ r.hotelName }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Dates:</span>
+                  <span class="detail-value">
+                    {{ formatDate(r.checkIn || '') }} → {{ formatDate(r.checkOut || '') }}
+                  </span>
+                </div>
+                <div class="detail-item" *ngIf="r.rooms">
+                  <span class="detail-label">Chambres:</span>
+                  <span class="detail-value">{{ r.rooms }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="reservation-footer">
+            <div class="reservation-meta">
+              <div class="meta-item">
+                <span class="meta-label">Date de réservation:</span>
+                <span class="meta-value">{{ formatDate(r.createdAt) }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Montant total:</span>
+                <span class="meta-value price">{{ formatPrice(r.totalPrice) }}</span>
+              </div>
+            </div>
+
+            <div class="reservation-actions">
+              <button 
+                class="btn-pay"
+                *ngIf="r.status === 'PENDING_PAYMENT'"
+                (click)="goPay(r)"
+              >
+                💳 Payer maintenant
+              </button>
+              <button 
+                class="btn-cancel"
+                (click)="cancel(r)"
+                [disabled]="r.status === 'CANCELED' || r.status === 'CONFIRMED' || cancelingId === r.id"
+              >
+                <span *ngIf="cancelingId !== r.id">❌ Annuler</span>
+                <span *ngIf="cancelingId === r.id">Traitement...</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="reservations.length === 0">
+      <div class="empty-icon">📋</div>
+      <h3>Aucune réservation</h3>
+      <p>Vous n'avez pas encore de réservations</p>
+    </div>
+  </div>
+
+  <!-- Message Alert -->
+  <div 
+    class="alert-message" 
+    *ngIf="message"
+    [class.alert-success]="message.includes('✅')"
+    [class.alert-error]="!message.includes('✅')"
+  >
+    <span class="alert-icon">{{ message.includes('✅') ? '✅' : '❌' }}</span>
+    <span>{{ message }}</span>
+  </div>
+</div>
+

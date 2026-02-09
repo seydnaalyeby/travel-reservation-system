@@ -1,0 +1,291 @@
+// Variables
+:host {
+  display: block;
+  --topbar-height: 64px;
+  --topbar-bg: #ffffff;
+  --topbar-border: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --danger-color: #ef4444;
+  --danger-hover: #dc2626;
+  --hover-bg: #f8fafc;
+  --active-bg: #f1f5f9;
+  
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+}
+
+// Topbar principal
+.topbar {
+  height: var(--topbar-height);
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--topbar-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+// Espace pour pousser les contrôles à droite
+.spacer {
+  flex: 1;
+}
+
+// Bouton toggle sidebar
+.toggle-btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--topbar-border);
+  background: var(--topbar-bg);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  padding: 0;
+  
+  &:hover {
+    background: var(--hover-bg);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    background: var(--active-bg);
+  }
+}
+
+.hamburger-icon {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 20px;
+  height: 20px;
+  justify-content: center;
+}
+
+.hamburger-line {
+  width: 20px;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: all var(--transition-fast);
+  
+  &:nth-child(1) {
+    width: 14px;
+  }
+  
+  &:nth-child(2) {
+    width: 20px;
+  }
+  
+  &:nth-child(3) {
+    width: 16px;
+  }
+}
+
+.toggle-btn:hover .hamburger-line {
+  background: var(--primary-color);
+  
+  &:nth-child(1) {
+    width: 20px;
+  }
+  
+  &:nth-child(3) {
+    width: 20px;
+  }
+}
+
+// Section des contrôles à droite
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--topbar-bg);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+  border: 1px solid var(--topbar-border);
+}
+
+// Boutons de contrôle génériques
+.control-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  
+  &:hover {
+    background: var(--hover-bg);
+  }
+  
+  &:active {
+    background: var(--active-bg);
+  }
+}
+
+.control-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--hover-bg);
+  transition: all var(--transition-fast);
+}
+
+.control-label {
+  white-space: nowrap;
+}
+
+// Thème toggle spécifique
+.theme-toggle {
+  &:hover {
+    .control-icon {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+    }
+    
+    .theme-icon {
+      transform: rotate(15deg) scale(1.1);
+    }
+  }
+}
+
+.theme-icon {
+  font-size: 16px;
+  transition: transform var(--transition-normal);
+}
+
+// Bouton de déconnexion spécifique
+.logout-btn {
+  color: var(--danger-color);
+  
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-hover);
+    
+    .control-icon {
+      background: var(--danger-color);
+      
+      .logout-icon {
+        filter: brightness(0) invert(1);
+      }
+    }
+  }
+  
+  &:active {
+    background: rgba(239, 68, 68, 0.15);
+  }
+}
+
+.logout-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  transition: all var(--transition-fast);
+}
+
+// Séparateur
+.divider {
+  width: 1px;
+  height: 24px;
+  background: var(--topbar-border);
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .topbar {
+    padding: 0 16px;
+  }
+  
+  .control-label {
+    display: none;
+  }
+  
+  .control-btn {
+    padding: 8px;
+  }
+  
+  .controls {
+    gap: 4px;
+    padding: 4px;
+  }
+  
+  .divider {
+    display: none;
+  }
+}
+
+// Dark mode global - appliqué via la classe sur html
+:host-context(html.dark) {
+  --topbar-bg: #1e293b;
+  --topbar-border: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --hover-bg: #2d3748;
+  --active-bg: #475569;
+  
+  .topbar {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  
+  .controls {
+    background: #2d3748;
+    border-color: #475569;
+  }
+  
+  .control-icon {
+    background: #475569;
+  }
+  
+  .toggle-btn {
+    background: #2d3748;
+    border-color: #475569;
+    
+    &:hover {
+      background: #475569;
+    }
+  }
+  
+  .divider {
+    background: #475569;
+  }
+}
+
+// Animation d'entrée
+.topbar {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

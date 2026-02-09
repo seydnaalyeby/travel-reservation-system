@@ -1,0 +1,409 @@
+// Variables
+$primary: #3b82f6;
+$primary-dark: #2563eb;
+$primary-light: #60a5fa;
+$success: #10b981;
+$danger: #ef4444;
+$purple: #8b5cf6;
+$bg-light: #f8fafc;
+$bg-white: #ffffff;
+$text-primary: #1e293b;
+$text-secondary: #64748b;
+$border-color: #e2e8f0;
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 20px;
+
+.payment-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.3;
+  }
+}
+
+.payment-container {
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+  z-index: 1;
+}
+
+.payment-card {
+  background: $bg-white;
+  border-radius: $radius-xl;
+  padding: 40px;
+  box-shadow: $shadow-xl;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: slideUp 0.4s ease;
+
+  @media (max-width: 768px) {
+    padding: 24px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Header
+.payment-header {
+  text-align: center;
+  margin-bottom: 32px;
+
+  .header-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    display: inline-block;
+    animation: bounce 2s infinite;
+  }
+
+  .payment-title {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 800;
+    color: $text-primary;
+    background: linear-gradient(135deg, $primary, $purple);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .payment-subtitle {
+    margin: 0;
+    font-size: 16px;
+    color: $text-secondary;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// Reservation Info
+.reservation-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+
+  .info-badge {
+    flex: 1;
+    min-width: 150px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+    border-radius: $radius-md;
+    border: 2px solid rgba(59, 130, 246, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &.alt {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+      border-color: rgba(139, 92, 246, 0.2);
+    }
+
+    .badge-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: $text-secondary;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-value {
+      font-size: 18px;
+      font-weight: 800;
+      color: $text-primary;
+    }
+  }
+}
+
+// Payment Form
+.payment-form {
+  .form-group {
+    margin-bottom: 24px;
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      color: $text-primary;
+      margin-bottom: 12px;
+
+      .label-icon {
+        font-size: 20px;
+      }
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid $border-color;
+      border-radius: $radius-md;
+      font-size: 16px;
+      font-weight: 600;
+      background: $bg-white;
+      color: $text-primary;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231e293b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 48px;
+
+      &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      }
+
+      &:hover {
+        border-color: $primary-light;
+      }
+    }
+
+    .form-hint {
+      margin-top: 8px;
+      font-size: 13px;
+      color: $text-secondary;
+      font-style: italic;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+
+    button {
+      flex: 1;
+      padding: 16px 24px;
+      border-radius: $radius-md;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 2px solid transparent;
+
+      .btn-icon {
+        font-size: 20px;
+      }
+    }
+
+    .btn-secondary {
+      background: $bg-light;
+      color: $text-primary;
+      border-color: $border-color;
+
+      &:hover {
+        background: $border-color;
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+      }
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, $primary, $purple);
+      color: white;
+      border: none;
+      box-shadow: $shadow-lg;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: $shadow-xl;
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .spinner-small {
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Alert Message
+.alert-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: $radius-md;
+  margin-top: 24px;
+  font-weight: 600;
+  animation: slideIn 0.3s ease;
+
+  &.alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 2px solid $success;
+    color: #065f46;
+  }
+
+  &.alert-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 2px solid $danger;
+    color: #991b1b;
+  }
+
+  .alert-icon {
+    font-size: 20px;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Payment Methods Info
+.payment-methods-info {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid $border-color;
+
+  h3 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    font-weight: 700;
+    color: $text-primary;
+  }
+
+  .methods-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    .method-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      background: $bg-light;
+      border-radius: $radius-md;
+      border: 1px solid $border-color;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: $shadow-md;
+        border-color: $primary;
+      }
+
+      .method-icon {
+        font-size: 32px;
+      }
+
+      .method-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: $text-primary;
+        text-align: center;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .payment-page {
+    padding: 16px;
+  }
+
+  .payment-card {
+    padding: 24px;
+  }
+
+  .payment-header {
+    .header-icon {
+      font-size: 48px;
+    }
+
+    .payment-title {
+      font-size: 24px;
+    }
+
+    .payment-subtitle {
+      font-size: 14px;
+    }
+  }
+
+  .reservation-info {
+    flex-direction: column;
+
+    .info-badge {
+      width: 100%;
+    }
+  }
+
+  .payment-form {
+    .form-actions {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+
+  .payment-methods-info {
+    .methods-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

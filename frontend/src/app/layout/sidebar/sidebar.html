@@ -1,0 +1,83 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  <!-- Brand Header -->
+  <div class="brand">
+    <div class="logo">
+      <span class="logo-icon">✈️</span>
+    </div>
+    <div class="brand-text">
+      <div class="app-name">Gestion des réservations</div>
+      <!-- <div class="app-subtitle">Admin Panel</div> -->
+    </div>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="navigation">
+    <!-- DASHBOARD -->
+    <a class="nav-item"
+       routerLink="/admin"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: true }"
+       title="Tableau de bord">
+      <div class="nav-icon">
+        <img class="nav-img" src="assets/house.png" alt="Dashboard">
+        <span class="nav-indicator"></span>
+      </div>
+      <span class="nav-label">Dashboard</span>
+      <span class="nav-badge" *ngIf="!collapsed">●</span>
+    </a>
+
+    <!-- VOLS -->
+    <a class="nav-item"
+       routerLink="/admin/vols"
+       routerLinkActive="active"
+       title="Gestion des vols">
+      <div class="nav-icon">
+        <img class="nav-img" src="assets/avion.png" alt="Vols">
+        <span class="nav-indicator"></span>
+      </div>
+      <span class="nav-label">Gestion des vols</span>
+      <span class="nav-badge" *ngIf="!collapsed">●</span>
+    </a>
+
+    <!-- HOTELS -->
+    <a class="nav-item"
+       routerLink="/admin/hotels"
+       routerLinkActive="active"
+       title="Gestion des hôtels">
+      <div class="nav-icon">
+        <img class="nav-img" src="assets/hotel.png" alt="Hôtels">
+        <span class="nav-indicator"></span>
+      </div>
+      <span class="nav-label">Gestion des hôtels</span>
+      <span class="nav-badge" *ngIf="!collapsed">●</span>
+    </a>
+
+    <!-- USERS -->
+    <a class="nav-item"
+       routerLink="/admin/users"
+       routerLinkActive="active"
+       title="Gestion des utilisateurs">
+      <div class="nav-icon">
+        <img class="nav-img" src="assets/client.png" alt="Utilisateurs">
+        <span class="nav-indicator"></span>
+      </div>
+      <span class="nav-label">Gestion des utilisateurs</span>
+      <span class="nav-badge" *ngIf="!collapsed">●</span>
+    </a>
+
+    <!-- RESERVATIONS -->
+    <a class="nav-item"
+       routerLink="/admin/reservations"
+       routerLinkActive="active"
+       title="Gestion des réservations">
+      <div class="nav-icon">
+        <img class="nav-img" src="assets/reservation.png" alt="Réservations">
+        <span class="nav-indicator"></span>
+      </div>
+      <span class="nav-label"> réservations</span>
+      <span class="nav-badge" *ngIf="!collapsed">●</span>
+    </a>
+  </nav>
+
+ 
+</aside>

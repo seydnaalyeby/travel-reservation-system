@@ -1,0 +1,324 @@
+
+<div class="user-management">
+  <!-- Header principal simplifié -->
+  <div class="admin-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>Gestion des Utilisateurs</h1>
+      </div>
+      
+      <div class="header-actions">
+        <button mat-stroked-button (click)="load()" [disabled]="loading" class="refresh-btn">
+          <mat-icon [class.spin]="loading">refresh</mat-icon>
+          {{ loading ? 'Chargement...' : 'Rafraîchir' }}
+        </button>
+
+        <button mat-raised-button color="primary" (click)="add()" class="add-btn">
+          <mat-icon>person_add</mat-icon>
+          Nouvel utilisateur
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barre de filtres compacte -->
+  <div class="filters-bar">
+    <div class="filters-left">
+      <!-- Recherche -->
+      <div class="search-container">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input
+          class="search-input"
+          [(ngModel)]="search"
+          (ngModelChange)="applyFilters()"
+          placeholder="Rechercher utilisateur..."
+          type="text"
+        />
+        <button
+          *ngIf="search"
+          class="clear-search"
+          (click)="search=''; applyFilters()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Filtres rapides -->
+      <div class="quick-filters">
+        <button 
+          mat-stroked-button 
+          [class.active]="!hasActiveFilters()"
+          (click)="showAllUsers()"
+          class="filter-chip"
+        >
+          Tous
+        </button>
+        
+        <button 
+          mat-stroked-button 
+          [class.active]="roleFilter === 'ADMIN'"
+          (click)="toggleRoleFilter('ADMIN')"
+          class="filter-chip admin"
+        >
+          Admins
+        </button>
+        
+        <button 
+          mat-stroked-button 
+          [class.active]="roleFilter === 'CLIENT'"
+          (click)="toggleRoleFilter('CLIENT')"
+          class="filter-chip client"
+        >
+          Clients
+        </button>
+        
+        <button 
+          mat-stroked-button 
+          [class.active]="statusFilter === 'ENABLED'"
+          (click)="toggleStatusFilter('ENABLED')"
+          class="filter-chip active"
+        >
+          Actifs
+        </button>
+      </div>
+    </div>
+
+    <div class="filters-right">
+      <!-- Stats rapides -->
+      <div class="quick-stats">
+        <span class="stat-item">
+          <mat-icon>group</mat-icon>
+          {{ totalUsers() }}
+        </span>
+        <span class="stat-item">
+          <mat-icon>check_circle</mat-icon>
+          {{ activeUsers() }}
+        </span>
+        <span class="stat-item">
+          <mat-icon>admin_panel_settings</mat-icon>
+          {{ adminUsers() }}
+        </span>
+      </div>
+
+      <!-- Filtres avancés -->
+      <mat-form-field appearance="outline" class="role-filter">
+        <mat-select [(ngModel)]="roleFilter" (selectionChange)="applyFilters()" placeholder="Rôle">
+          <mat-option value="ALL">Tous les rôles</mat-option>
+          <mat-option value="ADMIN">Administrateur</mat-option>
+          <mat-option value="CLIENT">Client</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button 
+        mat-stroked-button 
+        (click)="resetFilters()" 
+        class="reset-btn"
+        [disabled]="!hasActiveFilters()"
+      >
+        <mat-icon>restart_alt</mat-icon>
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenu principal avec liste -->
+  <div class="main-content">
+    <!-- État de chargement -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Chargement des utilisateurs...</div>
+    </div>
+
+    <!-- État d'erreur -->
+    <div *ngIf="error" class="error-state">
+      <div class="error-icon">
+        <mat-icon>error_outline</mat-icon>
+      </div>
+      <h3>Erreur de chargement</h3>
+      <p>{{ error }}</p>
+      <button mat-stroked-button (click)="load()" class="retry-btn">
+        <mat-icon>refresh</mat-icon>
+        Réessayer
+      </button>
+    </div>
+
+    <!-- État vide -->
+    <div *ngIf="!loading && !error && dataSource.filteredData.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <mat-icon>person_off</mat-icon>
+      </div>
+      <h3>{{ hasActiveFilters() ? 'Aucun résultat' : 'Aucun utilisateur' }}</h3>
+      <p>
+        {{ hasActiveFilters() 
+          ? 'Aucun utilisateur ne correspond à vos critères de recherche.' 
+          : 'Commencez par ajouter votre premier utilisateur.'
+        }}
+      </p>
+      <button 
+        *ngIf="!hasActiveFilters()" 
+        mat-raised-button 
+        color="primary" 
+        (click)="add()"
+        class="empty-action"
+      >
+        <mat-icon>person_add</mat-icon>
+        Ajouter un utilisateur
+      </button>
+      <button 
+        *ngIf="hasActiveFilters()" 
+        mat-stroked-button 
+        (click)="resetFilters()"
+        class="empty-action"
+      >
+        <mat-icon>filter_alt_off</mat-icon>
+        Réinitialiser les filtres
+      </button>
+    </div>
+
+    <!-- Tableau des utilisateurs -->
+    <div *ngIf="!loading && !error && dataSource.filteredData.length > 0" class="users-table">
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="users-data-table">
+          <!-- Colonne Utilisateur -->
+          <ng-container matColumnDef="user">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <div class="column-header">
+                <mat-icon>person</mat-icon>
+                <span>UTILISATEUR</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let user">
+              <div class="user-info">
+                <div class="user-avatar">
+                  <div class="avatar" [class]="getAvatarClass(user)">
+                    {{ getInitials(user.fullName) }}
+                  </div>
+                </div>
+                <div class="user-details">
+                  <div class="user-name">{{ user.fullName }}</div>
+                  <div class="user-email">{{ user.email }}</div>
+                  <div class="user-phone">{{ user.telephone }}</div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Rôle -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <div class="column-header">
+                <mat-icon>badge</mat-icon>
+                <span>RÔLE</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let user">
+              <div class="role-badge" [class]="getRoleClass(user)">
+                <mat-icon>{{ getRoleIcon(user.role) }}</mat-icon>
+                <span>{{ user.role }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Statut -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>toggle_on</mat-icon>
+                <span>STATUT</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let user">
+              <div class="status-container">
+                <div class="status-toggle">
+                  <mat-slide-toggle
+                    [checked]="user.enabled"
+                    (change)="toggleEnabled(user)"
+                    [color]="user.enabled ? 'primary' : 'warn'"
+                  >
+                  </mat-slide-toggle>
+                </div>
+                <div class="status-info">
+                  <div class="status-label" [class]="user.enabled ? 'active' : 'inactive'">
+                    {{ user.enabled ? 'Actif' : 'Inactif' }}
+                  </div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Date -->
+          <ng-container matColumnDef="registration">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <div class="column-header">
+                <mat-icon>calendar_today</mat-icon>
+                <span>DATE</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let user">
+              <div class="date-info">
+                <div class="date">{{ formatDate(user.createdAt) }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="column-header">
+                <mat-icon>settings</mat-icon>
+                <span>ACTIONS</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let user" class="actions-cell">
+              <div class="actions-buttons">
+                <button 
+                  mat-icon-button 
+                  (click)="edit(user)"
+                  matTooltip="Modifier"
+                  class="action-btn edit-btn"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button 
+                  mat-icon-button 
+                  (click)="remove(user)"
+                  matTooltip="Supprimer"
+                  class="action-btn delete-btn"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['user', 'role', 'status', 'registration', 'actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['user', 'role', 'status', 'registration', 'actions']"></tr>
+        </table>
+      </div>
+
+      <!-- Footer de la table -->
+      <div class="table-footer">
+        <div class="table-summary">
+          <mat-icon>list</mat-icon>
+          <span>{{ dataSource.filteredData.length }} utilisateur(s) affiché(s)</span>
+        </div>
+        
+        <div class="footer-actions">
+          <button mat-stroked-button (click)="exportToCSV()" class="export-btn">
+            <mat-icon>download</mat-icon>
+            Exporter
+          </button>
+          
+          <mat-paginator
+            [length]="dataSource.filteredData.length"
+            [pageSize]="10"
+            [pageSizeOptions]="[5, 10, 25, 50]"
+            showFirstLastButtons
+            aria-label="Sélectionner la page"
+          >
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

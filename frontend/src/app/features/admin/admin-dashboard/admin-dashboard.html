@@ -1,0 +1,265 @@
+<div class="admin-dashboard" [class.sidebar-collapsed]="collapsed">
+  <!-- Sidebar -->
+  <app-sidebar [collapsed]="collapsed" (signOut)="logout()"></app-sidebar>
+
+  <!-- Main Content Area -->
+  <div class="main-content-area">
+    <!-- Top Navigation -->
+    <app-navbar (toggle)="toggleSidebar()" (logout)="logout()"></app-navbar>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+      <!-- Dashboard Overview (only shown on /admin) -->
+      <section *ngIf="isAdminRoot" class="dashboard-overview">
+        <!-- Dashboard Header -->
+        <header class="dashboard-header">
+          <div class="header-content">
+            <h1 class="dashboard-title">Dashboard Admin</h1>
+            <p class="dashboard-subtitle">
+              Vue d'ensemble et statistiques de votre plateforme
+            </p>
+          </div>
+          <div class="header-indicators">
+            <div class="indicator" *ngIf="loadingStats">
+              <span class="indicator-dot loading"></span>
+              Chargement des statistiques...
+            </div>
+            <div class="indicator error" *ngIf="statsError">
+              <span class="indicator-dot error"></span>
+              {{ statsError }}
+            </div>
+          </div>
+        </header>
+
+        <!-- KPI Cards Grid -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon-container vol">
+              <span class="kpi-icon">✈️</span>
+            </div>
+            <div class="kpi-content">
+              <h3 class="kpi-title">Vols</h3>
+              <div class="kpi-value">{{ volsCount }}</div>
+              <p class="kpi-description">Vols disponibles</p>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-container hotel">
+              <span class="kpi-icon">🏨</span>
+            </div>
+            <div class="kpi-content">
+              <h3 class="kpi-title">Hôtels</h3>
+              <div class="kpi-value">{{ hotelsCount }}</div>
+              <p class="kpi-description">Établissements partenaires</p>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-container users">
+              <span class="kpi-icon">👥</span>
+            </div>
+            <div class="kpi-content">
+              <h3 class="kpi-title">Utilisateurs</h3>
+              <div class="kpi-value">{{ usersCount }}</div>
+              <p class="kpi-description">Comptes actifs</p>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-container reservations">
+              <span class="kpi-icon">📊</span>
+            </div>
+            <div class="kpi-content">
+              <h3 class="kpi-title">Réservations</h3>
+              <div class="kpi-value">{{ totalReservationsCount }}</div>
+              <div class="kpi-breakdown">
+                <div class="breakdown-item">
+                  <span class="breakdown-dot vol"></span>
+                  Vol: {{ volReservationsCount }}
+                </div>
+                <div class="breakdown-item">
+                  <span class="breakdown-dot hotel"></span>
+                  Hôtel: {{ hotelReservationsCount }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <section class="stats-section">
+          <div class="stats-header">
+            <div class="stats-title-section">
+              <h2 class="stats-title">Statistiques détaillées</h2>
+              <p class="stats-subtitle">
+                Période du {{ formatDate(statsFrom) }} au {{ formatDate(statsTo) }}
+                <span class="cancel-rate">• Taux d'annulation: {{ cancelRate }}%</span>
+              </p>
+            </div>
+
+            <div class="date-range-selector">
+              <div class="date-input-group">
+                <div class="date-input-wrapper">
+                  <label class="date-label" for="startDate">Date de début</label>
+                  <input 
+                    id="startDate"
+                    type="date" 
+                    [(ngModel)]="statsFrom" 
+                    (change)="reloadStats()"
+                    class="date-input"
+                    [disabled]="loadingStats"
+                  />
+                </div>
+                <div class="date-input-wrapper">
+                  <label class="date-label" for="endDate">Date de fin</label>
+                  <input 
+                    id="endDate"
+                    type="date" 
+                    [(ngModel)]="statsTo" 
+                    (change)="reloadStats()"
+                    class="date-input"
+                    [disabled]="loadingStats"
+                  />
+                </div>
+              </div>
+              <!-- <button 
+                class="refresh-btn" 
+                type="button" 
+                (click)="reloadStats()"
+                [disabled]="loadingStats"
+                [attr.aria-busy]="loadingStats"
+              >
+                <span class="btn-icon" *ngIf="!loadingStats">↻</span>
+                <span class="btn-icon loading" *ngIf="loadingStats"></span>
+                {{ loadingStats ? 'Chargement...' : 'Actualiser' }}
+              </button> -->
+            </div>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="charts-grid">
+            <div class="chart-container">
+              <div class="chart-header">
+                <h3 class="chart-title">Réservations par mois</h3>
+                <span class="chart-subtitle">Évolution mensuelle</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas #chartMonthlyCount></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-header">
+                <h3 class="chart-title">Chiffre d'affaires</h3>
+                <span class="chart-subtitle">Réservations confirmées</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas #chartMonthlyRevenue></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-header">
+                <h3 class="chart-title">Répartition par type</h3>
+                <span class="chart-subtitle">VOL vs HÔTEL</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas #chartByType></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-header">
+                <h3 class="chart-title">Statut des réservations</h3>
+                <span class="chart-subtitle">Distribution par statut</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas #chartByStatus></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Top Clients Section -->
+        <section class="top-clients-section">
+          <div class="section-header">
+            <div class="section-title-container">
+              <h2 class="section-title">Top 5 clients</h2>
+              <p class="section-subtitle">
+                Classement par nombre de réservations et chiffre d'affaires généré
+              </p>
+            </div>
+            <div class="section-badge">
+              <span class="badge-text">{{ statsFrom | date:'yyyy' }}</span>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <div class="table-responsive">
+              <table class="clients-table">
+                <thead>
+                  <tr>
+                    <th class="rank-col">Rang</th>
+                    <th class="client-col">Client</th>
+                    <th class="email-col">Email</th>
+                    <th class="reservations-col">Réservations</th>
+                    <th class="revenue-col">Chiffre d'affaires</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let client of topClients; let i = index" class="client-row">
+                    <td class="rank-cell">
+                      <span class="rank-badge" [ngClass]="'rank-' + (i + 1)">
+                        {{ i + 1 }}
+                      </span>
+                    </td>
+                    <td class="client-cell">
+                      <div class="client-info">
+                        <span class="client-name">{{ client.clientName }}</span>
+                        <span class="client-since">
+                          {{ getClientSince(client) }}
+                        </span>
+                      </div>
+                    </td>
+                    <td class="email-cell">
+                      <a [href]="'mailto:' + client.clientEmail" class="email-link">
+                        {{ client.clientEmail }}
+                      </a>
+                    </td>
+                    <td class="reservations-cell">
+                      <div class="reservations-count">
+                        <span class="count-badge">{{ client.reservationsCount }}</span>
+                      </div>
+                    </td>
+                    <td class="revenue-cell">
+                      <div class="revenue-amount">
+                        <span class="amount-value">{{ formatCurrency(client.revenueConfirmed) }}</span>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Empty State -->
+                  <tr *ngIf="topClients.length === 0" class="empty-row">
+                    <td colspan="5" class="empty-state">
+                      <div class="empty-state-content">
+                        <span class="empty-icon">📊</span>
+                        <h3 class="empty-title">Aucune donnée disponible</h3>
+                        <p class="empty-description">
+                          Aucune donnée client n'est disponible pour la période sélectionnée
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- Router Outlet for child routes -->
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

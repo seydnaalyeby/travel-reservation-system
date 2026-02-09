@@ -1,0 +1,124 @@
+<div class="page">
+
+  <div class="head">
+    <div>
+      <h2>Réservations</h2>
+      <div class="sub muted">
+        Affichés {{ filtered.length }} / {{ total }}
+        • Vol: {{ volCount }} • Hôtel: {{ hotelCount }}
+      </div>
+    </div>
+
+    <div class="head-actions">
+      <button class="btn" (click)="load()" [disabled]="loading">
+        Rafraîchir
+      </button>
+      <button class="btn ghost" (click)="resetFilters()" [disabled]="loading">
+        Réinitialiser
+      </button>
+    </div>
+  </div>
+
+  <div class="filters card">
+    <div class="f">
+      <label class="lbl">Recherche</label>
+      <input
+        class="inp"
+        type="text"
+        placeholder="Ref, client, email..."
+        [(ngModel)]="q"
+        (input)="applyFilters()"
+      />
+    </div>
+
+    <div class="f">
+      <label class="lbl">Type</label>
+      <select class="sel" [(ngModel)]="type" (change)="applyFilters()">
+        <option value="ALL">Tous</option>
+        <option value="VOL">VOL</option>
+        <option value="HOTEL">HOTEL</option>
+      </select>
+    </div>
+
+    <div class="f">
+      <label class="lbl">Statut</label>
+      <select class="sel" [(ngModel)]="status" (change)="applyFilters()">
+        <option value="ALL">Tous</option>
+        <option value="PENDING_PAYMENT">PENDING_PAYMENT</option>
+        <option value="CONFIRMED">CONFIRMED</option>
+        <option value="CANCELED">CANCELED</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="muted loading">Chargement...</div>
+
+  <div class="table card" *ngIf="!loading">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Réf</th>
+            <th>Client</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Montant</th>
+            <th>Statut</th>
+            <th style="width:180px">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let r of filtered">
+            <td class="mono cell-main">{{ r.ref }}</td>
+
+            <td>
+              <div class="cell-main">{{ r.clientName }}</div>
+              <div class="cell-sub muted">{{ r.clientEmail }}</div>
+            </td>
+
+            <td>
+              <span class="badge" [ngClass]="r.type === 'VOL' ? 'ok' : 'wait'">
+                {{ r.type }}
+              </span>
+            </td>
+
+            <td class="mono">{{ formatDate(r.createdAt) }}</td>
+
+            <td class="mono">{{ formatAmount(r.amount) }}</td>
+
+            <td>
+              <span class="badge"
+                [ngClass]="
+                  r.status === 'CONFIRMED' ? 'ok' :
+                  r.status === 'PENDING_PAYMENT' ? 'wait' :
+                  'no'
+                ">
+                {{ r.status }}
+              </span>
+            </td>
+
+            <td>
+              <div class="row-actions">
+                <div></div>
+  <button class="mini danger" (click)="cancel(r)" [disabled]="r.status==='CONFIRMED' || r.status==='CANCELED'">Annuler</button>
+
+<button class="mini danger" (click)="remove(r)" [disabled]="r.status==='CONFIRMED'">Supprimer</button>
+
+
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="filtered.length === 0">
+            <td colspan="7" class="empty muted">Aucune réservation</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="message" class="alert" [class.err]="!message.includes('✅')">
+    {{ message }}
+  </div>
+</div>

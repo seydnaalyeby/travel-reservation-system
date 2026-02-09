@@ -1,0 +1,35 @@
+<header class="topbar">
+  <!-- Bouton toggle sidebar à gauche -->
+  <button class="toggle-btn" (click)="toggle.emit()" aria-label="Toggle sidebar">
+    <span class="hamburger-icon">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </span>
+  </button>
+
+  <!-- Espace central vide pour alignement -->
+  <div class="spacer"></div>
+
+  <!-- Section droite avec les contrôles -->
+  <div class="controls">
+    <!-- Dark mode toggle -->
+    <button class="control-btn theme-toggle" (click)="toggleTheme()" aria-label="Changer de thème">
+      <div class="control-icon">
+        <span class="theme-icon">{{ isDark ? '🌙' : '☀️' }}</span>
+      </div>
+      <span class="control-label">Mode {{ isDark ? 'Sombre' : 'Clair' }}</span>
+    </button>
+
+    <!-- Séparateur -->
+    <div class="divider"></div>
+
+    <!-- Bouton de déconnexion -->
+    <button class="control-btn logout-btn" (click)="logout.emit()" aria-label="Déconnexion">
+      <div class="control-icon">
+        <img class="logout-icon" src="assets/logout.png" alt="Déconnexion" />
+      </div>
+      <span class="control-label">Déconnexion</span>
+    </button>
+  </div>
+</header>
